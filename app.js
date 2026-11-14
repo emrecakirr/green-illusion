@@ -8,7 +8,7 @@ en: {
  h1: "When does a burned forest really come back?",
  intro: `<p>Every summer we watch forests burn in Türkiye, Greece and California. A few years later the hills look green again, and it is easy to think the forest is back. Most of that green is grass and shrubs. The trees take much longer.</p>
 <p>I wanted a simple way to see the real number. So I compared two kinds of satellite data over burned forests: ordinary optical images, which see color, and the new NASA-ISRO NISAR radar, which sees trunks and branches. Then I turned the result into a tool: click anywhere on the map and see how long a forest there would need after a fire.</p>`,
- kOptT: "years until optical satellites call the forest “recovered”", kRadT: "years until NISAR radar sees the forest structure back", kPxT: "burned forest pixels studied, from fires in Türkiye, Greece and California",
+ kOptT: "years until optical satellites call the forest “recovered”", kRadT: "years until NISAR radar sees the forest structure back", kPxT: "km² of burned forest studied: 27 fires in Türkiye, Greece and California, measured square by square (21,754 squares of 500 m × 500 m)",
  s1: "1 · TRY IT", tryH: "Pick a place. What if it burned today?",
  tryLead: "Click any forest on the map, or use one of the shortcuts below. The tool reads the elevation and the slope direction of that spot, finds the most similar forest type we studied, and estimates two dates: when it will look green again, and when the trees will really be back.",
  tryEmpty: "<b>Click somewhere on the map</b>Try a forest near you.",
@@ -29,7 +29,7 @@ en: {
  pastHint: "Click any orange square to see when it burned and when the forest should be back.",
  barsH: "How much has come back so far", optShort: "optical (MODIS NDVI)", radShort: "radar (NISAR HV)",
  barsNote: "100% means the burned area looks the same as the nearby forest that did not burn.",
- evLabel: (y, age, n) => `${y} fire <span>${age} years ago · ${n} pixels</span>`,
+ evLabel: (y, age, n) => `${y} fire <span>${age} years ago · ${n} km² on the MODIS burn map</span>`,
  ppBurn: "Burned in", ppOpt: "Optical says", ppRad: "Radar says", ppBack: "Trees back by about", ppRec: "recovered",
  s3: "3 · WHY RADAR", whyH: "Same place, two satellites, two answers",
  whyLead: "Drag the white handle. On the left is what an optical satellite sees in August 2026: green. On the right is the NISAR radar image of the same hills on the same days. The burn scar is still clearly there.",
@@ -50,15 +50,15 @@ en: {
  m4: "<b>Turning space into time.</b> A fire from 18 years ago shows what today's young burn scar may look like in 2044. Putting all fires together gives one recovery curve per forest type. The ranges come from leaving out whole fires and refitting (bootstrap by fire).",
  m5: "<b>Local conditions.</b> NASADEM elevation and slope direction adjust the forecast. In our data, higher forests recovered faster. A slope effect also showed up, but I left it out because it is most likely a radar geometry effect on steep terrain.",
  limH: "Limits I want to be clear about",
- lim: `<p>The long end of the curves is an extrapolation. We do not yet have 50-year-old burns in the data. I used one NISAR date per region from NISAR's first months of public data (for Antalya, both orbit directions). Burn severity, soil and rainfall are not in the model yet. Forecasts for places far from the studied forests are rough guesses.</p><p>Next steps: more NISAR dates and both orbit directions, more regions, rainfall data from NASA GPM, and checks against forest inventory plots on the ground.</p>`,
+ lim: `<p>The long end of the curves is an extrapolation. We do not yet have 50-year-old burns in the data. I used one NISAR date per region from NISAR's first months of public data (for Antalya, both orbit directions). Burn severity, soil and rainfall are not in the model yet. Forecasts for places far from the studied forests are rough guesses.</p><p>Next steps: more NISAR dates, both orbit directions for every region, more regions, rainfall data from NASA GPM, and checks against forest inventory plots on the ground.</p>`,
  fieldH: "Checking against field studies and a second radar view",
- field: (o25, r25) => `<p>Satellite curves need a reality check. Our metrics are not identical to what ecologists measure in the field, so this is a check of direction, not an exact match. Two independent field studies point the same way as NISAR radar:</p>
+ field: (o25, r25) => `<p>Satellite curves need a reality check. Our metrics are not identical to what ecologists measure in the field, so this is a check of direction, not an exact match. Three field studies point the same way as NISAR radar:</p>
 <p><b>Spain, 25 years after the 1994 fires.</b> Field plots in Mediterranean pine and oak forests found that only 33 of 131 burned plots had reached a state similar to nearby unburned forest in height, cover and biomass (<a href="https://doi.org/10.1016/j.foreco.2023.121587" target="_blank" rel="noopener">Rodrigues et al. 2024, Forest Ecology and Management</a>). At 25 years our optical curve says the forest is ${o25}% back, our radar curve says ${r25}%. The field result is much closer to radar. The same study found better recovery on north-facing slopes and in wetter, cooler conditions, which matches the direction of our elevation effect.</p>
 <p><b>Antalya, the 2008 Serik–Taşağıl fire.</b> This fire is in our data. A five-year field study there found no Turkish red pine regeneration in stands that were young when they burned, and concluded that without planting these sites would stay dominated by other woody plants (<a href="https://doi.org/10.3906/tar-1601-21" target="_blank" rel="noopener">Kavgacı et al. 2016</a>). Our radar view of the same fire shows 64% of the woody structure back after 18 years; optical says 79%.</p>
-<p><b>Robustness: two radar views of the same day.</b> Radar sees slopes differently depending on which side the satellite looks from. For Antalya I also processed the NISAR pass from the opposite direction, taken the same day (20 Aug 2026). The two views agree pixel by pixel (correlation 0.85). Manavgat 2021 shows 13% and 20% radar recovery, Serik 2008 shows 64% and 67%. Time to 90% comes out at about 50 and 44 years, both far above the 31 years from optical data.</p>
+<p><b>Robustness: two radar views of the same day.</b> Radar sees slopes differently depending on which side the satellite looks from. For Antalya I also processed the NISAR pass from the opposite direction, taken the same day (20 Aug 2026). The two views agree square by square (correlation 0.85). Manavgat 2021 shows 13% and 20% radar recovery, Serik 2008 shows 64% and 67%. Time to 90% comes out at about 50 and 44 years, both far above the 31 years from optical data.</p>
 <p><b>California.</b> Field work in the Sierra Nevada documents forest turning into shrub fields after high-severity fire (<a href="https://doi.org/10.1002/ecs2.2882" target="_blank" rel="noopener">Richter et al. 2019</a>), which is what NISAR shows there.</p>`,
  tblH: "Results by region",
- th: ["Region", "Burned pixels", "Fires", "Optical: 90% back", "Radar: 90% back", "Green illusion"],
+ th: ["Region", "Burned area (km²)", "Fires", "Optical: 90% back", "Radar: 90% back", "Green illusion"],
  yrs: "yrs",
  vidH: "30-second demo", vidLead: "A short walk through the idea and the app.",
  dataH: "Data and code",
@@ -70,15 +70,16 @@ en: {
  noTrendTxt: "Here NISAR radar does not show the trees coming back with time: burn scars from 2001 look no more forested than ones from 2020. Optical data still call it “recovered” in about 12 years, because shrubs grow fast. In the Sierra Nevada, researchers have documented severe fires turning conifer forest into long-lasting shrub fields.",
  caNote: `<b>A warning from California.</b> Optical data say these burns recover in about 12 years. NISAR radar sees no steady return of trees: older scars are not further along than younger ones. This fits field studies from the Sierra Nevada showing that after high-severity fires, many forest stands were replaced by shrub fields (<a href="https://doi.org/10.1002/ecs2.2882" target="_blank" rel="noopener">Richter et al. 2019, Ecosphere</a>). Here the green illusion may be permanent unless people replant.`,
  unclear: "unclear", noTrendCell: "no clear trend", eviaNote: `<b>Evia.</b> Five years after the 2021 fire, the burn scar is still mostly dry grass and bare ground in late summer, so even optical data show little green yet. NISAR radar already sees some woody regrowth (about 13% of the neighbors' level).`,
- smallFires: (n) => `${n} smaller fires (under 150 pixels) are used in the curves but not listed here, because single small fires are noisy.`,
- groups: {med: "Mediterranean pine", sierra: "Sierra Nevada conifer"},
+ smallFires: (n) => `${n} smaller fires (under about 30 km² each) are used in the curves but not listed here, because single small fires are noisy.`,
+ groups: {med: "Mediterranean pine", sierra: "Sierra Nevada conifer"}, grpSuffix: {med: " (Antalya + Muğla + Evia)", sierra: " (all California fires)"},
+  tblNote: "<b>How to read this table.</b> “90% back” is the number of years until a burned area reaches 90% of the nearby forest that did not burn. Numbers in brackets are the likely range. “Green illusion” is how many more years radar needs than optical data. “No clear trend” means old and young burn scars look the same in that data, so no recovery time can be calculated (see the notes on California and Evia above); the gap is then shown as “?”. Bold rows combine all regions with the same forest type. 1 km² = 100 hectares.",
 },
 tr: {
  navTry: "Bir yer dene", navPast: "Geçmiş yangınlar", navWhy: "Neden radar", navTrust: "Ne kadar eminiz",
  h1: "Yanan bir orman gerçekten ne zaman geri gelir?",
  intro: `<p>Her yaz Türkiye'de, Yunanistan'da, Kaliforniya'da ormanların yanışını izliyoruz. Birkaç yıl sonra tepeler yeniden yeşeriyor ve orman geri geldi sanıyoruz. Oysa o yeşilin çoğu ot ve çalı. Ağaçların dönmesi çok daha uzun sürüyor.</p>
 <p>Bu süreyi gerçek veriyle görmek istedim. Yanmış ormanlarda iki tür uydu verisini karşılaştırdım: rengi gören normal optik görüntüler ve gövdeyi, dalları gören yeni NASA-ISRO NISAR radarı. Sonra bunu bir araca dönüştürdüm: haritada herhangi bir yere tıkla, orada yangın çıksa ormanın kaç yılda geri geleceğini gör.</p>`,
- kOptT: "yıl sonra optik uydular ormana “toparlandı” diyor", kRadT: "yıl sonra NISAR radarı orman yapısının geri geldiğini görüyor", kPxT: "yanmış orman pikseli incelendi: Türkiye, Yunanistan ve Kaliforniya",
+ kOptT: "yıl sonra optik uydular ormana “toparlandı” diyor", kRadT: "yıl sonra NISAR radarı orman yapısının geri geldiğini görüyor", kPxT: "km² yanmış orman incelendi: Türkiye, Yunanistan ve Kaliforniya'da 27 yangın, 500 m × 500 m'lik 21.754 karede tek tek ölçüldü",
  s1: "1 · DENE", tryH: "Bir yer seç. Bugün yansa ne olur?",
  tryLead: "Haritada herhangi bir ormana tıkla ya da aşağıdaki kısayollardan birini seç. Araç o noktanın yüksekliğini ve yamaç yönünü okuyor, incelediğimiz orman tiplerinden en benzerini buluyor ve iki tarih tahmin ediyor: ne zaman yeniden yeşil görüneceği ve ağaçların gerçekten ne zaman geri geleceği.",
  tryEmpty: "<b>Haritada bir yere tıkla</b>Yakınındaki bir ormanı dene.",
@@ -99,7 +100,7 @@ tr: {
  pastHint: "Ne zaman yandığını ve ormanın ne zaman geri geleceğini görmek için turuncu bir kareye tıkla.",
  barsH: "Şimdiye kadar ne kadarı geri geldi", optShort: "optik (MODIS NDVI)", radShort: "radar (NISAR HV)",
  barsNote: "%100, yanık alanın yakındaki hiç yanmamış ormanla aynı göründüğü anlamına geliyor.",
- evLabel: (y, age, n) => `${y} yangını <span>${age} yıl önce · ${n} piksel</span>`,
+ evLabel: (y, age, n) => `${y} yangını <span>${age} yıl önce · MODIS yanık haritasında ${n} km²</span>`,
  ppBurn: "Yandığı yıl", ppOpt: "Optik diyor ki", ppRad: "Radar diyor ki", ppBack: "Ağaçların dönüşü yaklaşık", ppRec: "toparlandı",
  s3: "3 · NEDEN RADAR", whyH: "Aynı yer, iki uydu, iki farklı cevap",
  whyLead: "Beyaz tutamağı sürükle. Solda optik uydunun Ağustos 2026'da gördüğü var: yeşil. Sağda aynı tepelerin aynı günlerdeki NISAR radar görüntüsü. Yangın izi hâlâ açıkça orada.",
@@ -120,15 +121,15 @@ tr: {
  m4: "<b>Mekânı zamana çevirmek.</b> 18 yıl önce yanmış bir alan, bugünkü genç yangın izinin 2044'te nasıl görünebileceğini gösteriyor. Tüm yangınlar bir araya gelince her orman tipi için bir toparlanma eğrisi çıkıyor. Aralıklar, yangınları tek tek dışarıda bırakıp yeniden hesaplayarak bulundu (yangın bazlı bootstrap).",
  m5: "<b>Yerel koşullar.</b> NASADEM yüksekliği ve yamaç yönü tahmini ayarlıyor. Verimizde daha yüksekteki ormanlar daha hızlı toparlandı. Bir eğim etkisi de çıktı ama dahil etmedim, çünkü büyük ihtimalle dik arazide radarın bakış açısından kaynaklanıyor.",
  limH: "Açık olmak istediğim sınırlar",
- lim: `<p>Eğrilerin uzun ucu bir tahmin, veride henüz 50 yıllık yanık alan yok. Her bölge için NISAR'ın ilk aylardaki açık verisinden tek bir tarih kullandım (Antalya için iki yörünge yönü de). Yangının şiddeti, toprak ve yağış henüz modelde yok. İncelenen ormanlardan uzak yerler için tahminler kaba.</p><p>Sonraki adımlar: daha çok NISAR tarihi ve iki yörünge yönü, daha çok bölge, NASA GPM yağış verisi ve yerdeki orman envanteri ölçümleriyle karşılaştırma.</p>`,
+ lim: `<p>Eğrilerin uzun ucu bir tahmin, veride henüz 50 yıllık yanık alan yok. Her bölge için NISAR'ın ilk aylardaki açık verisinden tek bir tarih kullandım (Antalya için iki yörünge yönü de). Yangının şiddeti, toprak ve yağış henüz modelde yok. İncelenen ormanlardan uzak yerler için tahminler kaba.</p><p>Sonraki adımlar: daha çok NISAR tarihi, her bölge için iki yörünge yönü, daha çok bölge, NASA GPM yağış verisi ve yerdeki orman envanteri ölçümleriyle karşılaştırma.</p>`,
  fieldH: "Saha çalışmaları ve ikinci bir radar görüntüsüyle kontrol",
- field: (o25, r25) => `<p>Uydudan çıkan eğrilerin sahada doğrulanması gerekir. Bizim ölçtüğümüz şey ekologların sahada ölçtüğüyle birebir aynı değil, bu yüzden bu bir yön kontrolü, kesin eşleşme değil. İki bağımsız saha çalışması NISAR radarıyla aynı yönü gösteriyor:</p>
+ field: (o25, r25) => `<p>Uydudan çıkan eğrilerin sahada doğrulanması gerekir. Bizim ölçtüğümüz şey ekologların sahada ölçtüğüyle birebir aynı değil, bu yüzden bu bir yön kontrolü, kesin eşleşme değil. Üç saha çalışması NISAR radarıyla aynı yönü gösteriyor:</p>
 <p><b>İspanya, 1994 yangınlarından 25 yıl sonra.</b> Akdeniz çam ve meşe ormanlarındaki saha ölçümlerinde, yanan 131 alandan sadece 33'ü boy, örtü ve biyokütle bakımından yanmamış komşu ormana benzer duruma ulaşmış (<a href="https://doi.org/10.1016/j.foreco.2023.121587" target="_blank" rel="noopener">Rodrigues ve ark. 2024, Forest Ecology and Management</a>). 25. yılda bizim optik eğrimiz ormanın %${o25} geri geldiğini, radar eğrimiz %${r25} geri geldiğini söylüyor. Saha sonucu radara çok daha yakın. Aynı çalışma kuzeye bakan yamaçlarda ve daha nemli, serin koşullarda toparlanmanın daha iyi olduğunu bulmuş. Bu, bizim yükseklik etkimizle aynı yönde.</p>
 <p><b>Antalya, 2008 Serik–Taşağıl yangını.</b> Bu yangın bizim verimizde var. Orada yapılan beş yıllık saha çalışması, yandığında genç olan meşcerelerde hiç kızılçam yenilenmesi bulamamış ve fidan dikilmezse bu alanların başka odunsu bitkilerin hâkimiyetinde kalacağı sonucuna varmış (<a href="https://doi.org/10.3906/tar-1601-21" target="_blank" rel="noopener">Kavgacı ve ark. 2016</a>). Bizim radar görünümümüz aynı yangında 18 yıl sonra odunsu yapının %64'ünün döndüğünü gösteriyor, optik %79 diyor.</p>
-<p><b>Sağlamlık testi: aynı günün iki radar görüntüsü.</b> Radar, uydunun hangi taraftan baktığına göre yamaçları farklı görür. Antalya için aynı gün (20 Ağustos 2026) ters yönden geçen NISAR görüntüsünü de işledim. İki görüntü piksel piksel uyumlu (korelasyon 0,85). Manavgat 2021 için radar toparlanması %13 ve %20, Serik 2008 için %64 ve %67. %90 dönüş süresi yaklaşık 50 ve 44 yıl çıkıyor. İkisi de optik verinin söylediği 31 yılın çok üstünde.</p>
+<p><b>Sağlamlık testi: aynı günün iki radar görüntüsü.</b> Radar, uydunun hangi taraftan baktığına göre yamaçları farklı görür. Antalya için aynı gün (20 Ağustos 2026) ters yönden geçen NISAR görüntüsünü de işledim. İki görüntü kare kare uyumlu (korelasyon 0,85). Manavgat 2021 için radar toparlanması %13 ve %20, Serik 2008 için %64 ve %67. %90 dönüş süresi yaklaşık 50 ve 44 yıl çıkıyor. İkisi de optik verinin söylediği 31 yılın çok üstünde.</p>
 <p><b>Kaliforniya.</b> Sierra Nevada'daki saha çalışmaları şiddetli yangınlardan sonra ormanın çalılığa dönüştüğünü belgeliyor (<a href="https://doi.org/10.1002/ecs2.2882" target="_blank" rel="noopener">Richter ve ark. 2019</a>). NISAR'ın orada gösterdiği de bu.</p>`,
  tblH: "Bölgelere göre sonuçlar",
- th: ["Bölge", "Yanık piksel", "Yangın", "Optik: %90 dönüş", "Radar: %90 dönüş", "Yeşil yanılsama"],
+ th: ["Bölge", "Yanık alan (km²)", "Yangın", "Optik: %90 dönüş", "Radar: %90 dönüş", "Yeşil yanılsama"],
  yrs: "yıl",
  vidH: "30 saniyelik tanıtım", vidLead: "Fikrin ve uygulamanın kısa bir turu.",
  dataH: "Veri ve kod",
@@ -140,15 +141,16 @@ tr: {
  noTrendTxt: "Burada NISAR radarı ağaçların zamanla geri geldiğini göstermiyor: 2001'de yanmış alanlar, 2020'de yanmışlardan daha ormanlık görünmüyor. Optik veri ise çalılar hızlı büyüdüğü için yaklaşık 12 yılda “toparlandı” diyor. Sierra Nevada'da araştırmacılar şiddetli yangınların iğne yapraklı ormanı uzun süre kalan çalılıklara dönüştürdüğünü belgelemiş.",
  caNote: `<b>Kaliforniya'dan bir uyarı.</b> Optik veri bu yanık alanların yaklaşık 12 yılda toparlandığını söylüyor. NISAR radarı ise ağaçların düzenli bir şekilde geri geldiğini görmüyor: eski yanık alanlar gençlerden daha ileride değil. Bu, Sierra Nevada'daki saha çalışmalarıyla uyumlu: şiddetli yangınlardan sonra birçok orman alanının yerini çalılıklar almış (<a href="https://doi.org/10.1002/ecs2.2882" target="_blank" rel="noopener">Richter ve ark. 2019, Ecosphere</a>). Burada yeşil yanılsama, insanlar fidan dikmezse kalıcı olabilir.`,
  unclear: "belirsiz", noTrendCell: "net eğilim yok", eviaNote: `<b>Evia.</b> 2021 yangınından beş yıl sonra yanık alan yaz sonunda hâlâ büyük ölçüde kuru ot ve çıplak toprak, bu yüzden optik veri bile henüz pek yeşillik görmüyor. NISAR radarı ise biraz odunsu büyüme görüyor (komşu ormanın yaklaşık %13'ü kadar).`,
- smallFires: (n) => `${n} küçük yangın (150 pikselden az) eğrilerde kullanıldı ama burada listelenmedi, çünkü tek tek küçük yangınlar gürültülü.`,
- groups: {med: "Akdeniz çamı", sierra: "Sierra Nevada iğne yapraklı"},
+ smallFires: (n) => `${n} küçük yangın (her biri yaklaşık 30 km²'den küçük) eğrilerde kullanıldı ama burada listelenmedi, çünkü tek tek küçük yangınlar gürültülü.`,
+ groups: {med: "Akdeniz çamı", sierra: "Sierra Nevada iğne yapraklı"}, grpSuffix: {med: " (Antalya + Muğla + Evia)", sierra: " (tüm Kaliforniya yangınları)"},
+  tblNote: "<b>Tablo nasıl okunur?</b> “%90 dönüş”, yanık alanın yanmamış komşu ormanın %90'ına ulaşması için gereken yıl sayısıdır. Parantez içindeki sayılar olası aralıktır. “Yeşil yanılsama”, radarın optik veriden kaç yıl daha fazla süre gördüğüdür. “Net eğilim yok”, o veride eski ve yeni yanık alanların aynı göründüğü, bu yüzden toparlanma süresinin hesaplanamadığı anlamına gelir (yukarıdaki Kaliforniya ve Evia notlarına bakın); bu durumda fark “?” olarak gösterilir. Kalın satırlar aynı orman tipindeki bölgeleri birleştirir. 1 km² = 100 hektar.",
 }};
 const FIRE_NAMES = {antalya: {2021: "Manavgat", 2008: "Serik–Taşağıl"}, mugla: {2021: "Marmaris · Köyceğiz · Milas"}, evia: {2021: "North Evia"}, california: {2018: "Camp Fire", 2020: "North Complex", 2021: "Dixie Fire"}};
 const QUICK = [["Ankara · Beynam", 39.70, 32.88], ["İzmir · Seferihisar", 38.15, 26.88], ["Kazdağları", 39.70, 26.85], ["Athens · Parnitha", 38.17, 23.72], ["Paradise, CA", 39.76, -121.62]];
 
 let L_ = (navigator.language || "en").toLowerCase().startsWith("tr") ? "tr" : "en";
 const t = k => T[L_][k];
-const pct = r => Math.round(Math.max(0, Math.min(1, r)) * 100) + "%";
+const pct = r => { const v = Math.round(Math.max(0, Math.min(1, r)) * 100); return L_ === "tr" ? "%" + v : v + "%"; };
 const Rf = (age, tau) => age <= 0 ? 0 : 1 - Math.exp(-age / tau);
 const toYrs = (r, tau) => { const rr = Math.max(0, Math.min(0.9, r)); return Math.max(0, tau * Math.LN10 + tau * Math.log(1 - rr)); };
 const ESRI = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -211,7 +213,7 @@ async function pick(lat, lon){
   if (ter && ter.z <= 2){ box.innerHTML = `<h3>${t("resH")}</h3><div class="warn">${t("warnSea")}</div>`; return; }
   const f = forecast(lat, lon, ter);
   const yG = Math.round(NOW + f.opt), yB = f.rad == null ? null : Math.round(NOW + f.rad), gap = f.rad == null ? null : Math.round(f.rad - f.opt);
-  const meta = ter ? t("resMeta")(ter.z, aspectText(ter.north), t("groups")[f.region.group] + " · " + t("regions")[f.region.key], f.km.toLocaleString()) : "";
+  const meta = ter ? t("resMeta")(ter.z, aspectText(ter.north), t("groups")[f.region.group] + " · " + t("regions")[f.region.key], fmtN(f.km)) : "";
   box.innerHTML = `<h3>${t("resH")}</h3><div class="meta">${meta}</div>
     <div class="big2"><div><div class="y" style="color:var(--optL)">~${yG}</div><div class="l">${t("greenBy")}</div></div>
     <div><div class="y" style="color:var(--radL)">${yB == null ? t("noTrendBox") : "~" + yB}</div><div class="l">${yB == null ? t("noTrendLbl") : t("backBy")}</div></div></div>
@@ -281,7 +283,7 @@ function bars(){
   const big = r.events.filter(e => e.n >= 150), small = r.events.length - big.length;
   el.innerHTML = big.slice().sort((a, b) => b.y - a.y).map(e => {
     const nm = (FIRE_NAMES[curReg] || {})[e.y];
-    return `<div class="ev"><div class="hd"><b>${nm ? nm + " · " : ""}${t("evLabel")(e.y, e.age, e.n.toLocaleString())}</b></div>
+    return `<div class="ev"><div class="hd"><b>${nm ? nm + " · " : ""}${t("evLabel")(e.y, e.age, fmtN(e.n * KM2))}</b></div>
       <div class="bar"><span>${L_ === "tr" ? "Optik" : "Optical"}</span><div class="tr"><div class="fl" style="width:${Math.max(0, Math.min(100, e.opt * 100))}%;background:var(--opt)"></div></div><b>${pct(e.opt)}</b></div>
       <div class="bar"><span>Radar</span><div class="tr"><div class="fl" style="width:${Math.max(0, Math.min(100, e.rad * 100))}%;background:var(--rad)"></div></div><b>${pct(e.rad)}</b></div></div>`;
   }).join("") + (small ? `<div class="note">${t("smallFires")(small)}</div>` : "") + (curReg === "california" ? `<div class="warn" style="margin-top:12px;color:var(--ink2)">${t("caNote")}</div>` : "") + (curReg === "evia" ? `<div class="warn" style="margin-top:12px;color:var(--ink2)">${t("eviaNote")}</div>` : "");
@@ -345,22 +347,24 @@ function drawEvidence(){
   ev.innerHTML = h;
   ev.querySelectorAll(".pt").forEach(c => {
     c.addEventListener("mouseenter", e => { const p = pts[+c.dataset.i]; const nm = (FIRE_NAMES[p.r.key] || {})[p.e.y];
-      tt.innerHTML = `<b>${t("regions")[p.r.key]} · ${p.e.y}${nm ? " (" + nm + ")" : ""}</b><br>${p.e.age} ${t("ttYrs")} · ${p.e.n} px<br><span style="color:var(--optL)">●</span> ${pct(p.e.opt)} &nbsp; <span style="color:var(--radL)">●</span> ${pct(p.e.rad)}`;
+      tt.innerHTML = `<b>${t("regions")[p.r.key]} · ${p.e.y}${nm ? " (" + nm + ")" : ""}</b><br>${p.e.age} ${t("ttYrs")} · ${fmtN(p.e.n * KM2)} km²<br><span style="color:var(--optL)">●</span> ${pct(p.e.opt)} &nbsp; <span style="color:var(--radL)">●</span> ${pct(p.e.rad)}`;
       tt.style.display = "block"; const b = ev.getBoundingClientRect(), x = e.clientX - b.left; tt.style.left = (x > b.width * .6 ? x - 230 : x + 12) + "px"; tt.style.top = (e.clientY - b.top - 20) + "px"; });
     c.addEventListener("mouseleave", () => tt.style.display = "none");
   });
 }
+const KM2 = 0.2147;
+function fmtN(n){ return Math.round(n).toLocaleString(L_ === "tr" ? "tr-TR" : "en-US"); }
 function table(){
   const th = t("th"); let h = `<tr>${th.map((x, i) => `<th${i ? ' style="text-align:right"' : ""}>${x}</th>`).join("")}</tr>`;
-  for (const r of G.regions) h += `<tr><td>${t("regions")[r.key]}</td><td class="n">${r.n.toLocaleString()}</td><td class="n">${r.events.length}</td>
+  for (const r of G.regions) h += `<tr><td>${t("regions")[r.key]}</td><td class="n">${fmtN(r.n * KM2)}</td><td class="n">${r.events.length}</td>
     <td class="n">${r.opt.noTrend ? t("noTrendCell") : `${Math.round(r.opt.t90)} ${t("yrs")} <span style="color:var(--ink3)">(${Math.round(r.opt.lo)}–${Math.round(r.opt.hi)})</span>`}</td>
     <td class="n">${r.rad.noTrend ? t("noTrendCell") : `${Math.round(r.rad.t90)} ${t("yrs")} <span style="color:var(--ink3)">(${Math.round(r.rad.lo)}–${Math.round(r.rad.hi)})</span>`}</td>
     <td class="n"><b>${(r.rad.noTrend || r.opt.noTrend) ? "?" : `+${Math.round(r.rad.t90 - r.opt.t90)} ${t("yrs")}`}</b></td></tr>`;
-  for (const [k, g] of Object.entries(G.groups)) h += `<tr style="background:rgba(255,255,255,.03)"><td><b>${t("groups")[k]}</b></td><td class="n">${g.n.toLocaleString()}</td><td class="n">${g.nEv}</td>
+  for (const [k, g] of Object.entries(G.groups)) h += `<tr style="background:rgba(255,255,255,.03)"><td><b>${t("groups")[k]}</b><span style="color:var(--ink3);font-size:13px">${t("grpSuffix")[k]}</span></td><td class="n">${fmtN(g.n * KM2)}</td><td class="n">${g.nEv}</td>
     <td class="n"><b>${Math.round(g.opt.t90)} ${t("yrs")}</b> <span style="color:var(--ink3)">(${Math.round(g.opt.lo)}–${Math.round(g.opt.hi)})</span></td>
     <td class="n">${g.rad.noTrend ? t("noTrendCell") : `<b>${Math.round(g.rad.t90)} ${t("yrs")}</b> <span style="color:var(--ink3)">(${Math.round(g.rad.lo)}–${Math.round(g.rad.hi)})</span>`}</td>
     <td class="n"><b>${g.rad.noTrend ? "?" : `+${Math.round(g.rad.t90 - g.opt.t90)} ${t("yrs")}`}</b></td></tr>`;
-  document.getElementById("tbl").innerHTML = h;
+  document.getElementById("tbl").innerHTML = h + `<caption style="caption-side:bottom;text-align:left;color:var(--ink2);font-size:14px;line-height:1.55;padding-top:12px">${t("tblNote")}</caption>`;
 }
 
 /* ---------------- language & init ---------------- */
@@ -378,7 +382,7 @@ function applyLang(){
   const g = G.groups.med;
   document.getElementById("kOpt").innerHTML = `~${Math.round(g.opt.t90)}`;
   document.getElementById("kRad").innerHTML = `~${Math.round(g.rad.t90)}`;
-  document.getElementById("kPx").textContent = G.nPx.toLocaleString();
+  document.getElementById("kPx").textContent = "~" + fmtN(Math.round(G.nPx * KM2 / 10) * 10);
   tabsInit();
   document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === curReg));
   document.querySelectorAll("#swTabs button").forEach(b => b.classList.toggle("on", b.dataset.k === swReg));

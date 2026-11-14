@@ -14,7 +14,7 @@ Every summer forests burn in Türkiye, Greece and California. A few years later 
 ![Try a place](img/screens/try_place.jpg)
 
 1. **Try a place.** Click anywhere on Earth. The app reads the elevation and slope direction of that point, picks the most similar forest type we studied, and gives two dates for a fire today: when it will look green again from space, and when the trees will really be back.
-2. **Look back.** 21,754 burned forest pixels from 27 fires in 4 regions (Antalya and Muğla (Türkiye), Evia (Greece) and the northern Sierra Nevada (California)). Switch between the optical view and the NISAR radar view, and click any burned square.
+2. **Look back.** About 4,670 km² of burned forest (21,754 MODIS squares of 500 m × 500 m) from 27 fires in 4 regions (Antalya and Muğla (Türkiye), Evia (Greece) and the northern Sierra Nevada (California)). Switch between the optical view and the NISAR radar view, and click any burned square.
 3. **Why radar.** A swipe comparison of the optical image and the real NISAR L-band image of the same hills, taken in the same weeks.
 4. **How sure are we.** Every fire as a dot, the fitted recovery curves, the method and its limits.
 
