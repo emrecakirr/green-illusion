@@ -19,7 +19,7 @@ en: {
  gapTxt: (g) => `For about <b>${g} years</b> this place would look recovered from space while the forest is still missing. That gap is the green illusion.`,
  child: (y) => `A child born the year it burns would be <b>${y}</b> when the forest is back.`,
  placeChart: "Recovery over time at this place",
- warnSea: "This point looks like water or sea level. Try a spot on land.",
+ warnSea: "This point looks like water or sea level. Try a spot on land.", warnFlat: "This spot is perfectly flat, so it is most likely a lake or open water. Try a forested slope nearby.",
  warnFar: "This place is far from the forests we studied, so treat the numbers as a rough guess.",
  warnHigh: "This elevation is outside what we saw in burned areas, so the estimate is less certain.",
  warnFail: "Could not read the terrain here (no internet or no data). Showing the average for the closest forest type.",
@@ -90,7 +90,7 @@ tr: {
  gapTxt: (g) => `Yaklaşık <b>${g} yıl</b> boyunca burası uzaydan bakınca toparlanmış görünecek, ama orman hâlâ eksik olacak. Bu fark, yeşil yanılsama.`,
  child: (y) => `Yangın yılında doğan bir çocuk, orman geri geldiğinde <b>${y}</b> yaşında olacak.`,
  placeChart: "Bu noktada zamanla toparlanma",
- warnSea: "Bu nokta su ya da deniz seviyesi gibi görünüyor. Karada bir yer dene.",
+ warnSea: "Bu nokta su ya da deniz seviyesi gibi görünüyor. Karada bir yer dene.", warnFlat: "Bu nokta tamamen düz, büyük ihtimalle bir göl ya da su yüzeyi. Yakındaki ormanlık bir yamaca tıkla.",
  warnFar: "Burası incelediğimiz ormanlardan uzak, rakamları kaba bir tahmin olarak düşün.",
  warnHigh: "Bu yükseklik yanık alanlarda gördüğümüz aralığın dışında, tahmin daha belirsiz.",
  warnFail: "Bu noktanın arazisi okunamadı (internet ya da veri yok). En yakın orman tipinin ortalaması gösteriliyor.",
@@ -183,7 +183,7 @@ async function terrain(lat, lon){
     return d[i] * 256 + d[i + 1] + d[i + 2] / 256 - 32768; };
   const [c, nN, sS, e, w] = await Promise.all([get(0, 0), get(0, -4), get(0, 4), get(4, 0), get(-4, 0)]);
   const gy = (sS - nN), gx = (e - w), h = Math.hypot(gx, gy);
-  return {z: Math.round(c), north: h > 1 ? gy / h : 0};
+  const all = [c, nN, sS, e, w]; return {z: Math.round(c), north: h > 1 ? gy / h : 0, flat: Math.max(...all) - Math.min(...all) < 0.5};
 }
 function forecast(lat, lon, ter){
   let best = null;
@@ -211,6 +211,7 @@ async function pick(lat, lon){
   let ter = null, fail = false;
   try { ter = await terrain(lat, lon); } catch (e) { fail = true; }
   if (ter && ter.z <= 2){ box.innerHTML = `<h3>${t("resH")}</h3><div class="warn">${t("warnSea")}</div>`; return; }
+  if (ter && ter.flat){ box.innerHTML = `<h3>${t("resH")}</h3><div class="warn">${t("warnFlat")}</div>`; return; }
   const f = forecast(lat, lon, ter);
   const yG = Math.round(NOW + f.opt), yB = f.rad == null ? null : Math.round(NOW + f.rad), gap = f.rad == null ? null : Math.round(f.rad - f.opt);
   const meta = ter ? t("resMeta")(ter.z, aspectText(ter.north), t("groups")[f.region.group] + " · " + t("regions")[f.region.key], fmtN(f.km)) : "";
