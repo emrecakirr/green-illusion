@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Green Illusion – NISAR sees when a burned forest is truly back</title>
 <meta name="description" content="NASA Space Apps 2026 · Dancing with the SARs. Optical satellites say a burned forest is back. NISAR L-band radar says it is not.">
+<meta property="og:title" content="The Green Illusion – NISAR radar reveals when a burned forest is truly back">
+<meta property="og:description" content="Optical satellites say Antalya's burned forests recover in ~31 years. NASA-ISRO NISAR L-band radar says ~50. NASA Space Apps 2026.">
+<meta property="og:image" content="https://emrecakirr.github.io/green-illusion/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="lib/leaflet.css">
 <style>
 :root{
@@ -36,6 +40,12 @@ h1{font-size:clamp(34px,6vw,62px);line-height:1.05;margin:10px 0 18px;letter-spa
 .vs{color:var(--ink3);font-weight:700}
 .gap{margin-top:14px;color:var(--ink);font-size:18px}
 .gap b{color:var(--accent)}
+.vid{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:center}
+.vid video{width:100%;border-radius:14px;border:1px solid var(--line);background:#000}
+@media(max-width:860px){.vid{grid-template-columns:1fr}}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{display:inline-block;padding:9px 14px;border-radius:9px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
+.btn:hover{border-color:var(--ink3)}
 section{padding:44px 0;border-top:1px solid var(--line)}
 h2{font-size:clamp(24px,3.4vw,34px);margin:0 0 8px;letter-spacing:-.2px}
 .sub{color:var(--ink2);margin:0 0 22px;max-width:780px}
@@ -72,6 +82,19 @@ footer{padding:30px 0 60px;color:var(--ink3);font-size:13px;border-top:1px solid
 .pp b{font-size:15px}.pp .r{display:flex;justify-content:space-between;gap:16px}
 .leaflet-container{background:#0b0f0d}
 .leaflet-top,.leaflet-bottom{z-index:400}
+.hero{position:relative}
+.herobg{position:absolute;inset:0;background:url(img/hero_radar.jpg) center/cover;opacity:.22;-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 55%);mask-image:linear-gradient(90deg,transparent 0%,#000 55%);pointer-events:none}
+.heroin{position:relative}
+#swipeMap{height:560px;border-radius:14px;border:1px solid var(--line);position:relative}
+.handle{position:absolute;top:0;bottom:0;width:0;z-index:650;left:50%}
+.handle .bar{position:absolute;top:0;bottom:0;left:-1.5px;width:3px;background:#fff;box-shadow:0 0 8px rgba(0,0,0,.6)}
+.handle .knob{position:absolute;top:50%;left:-22px;width:44px;height:44px;margin-top:-22px;border-radius:50%;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:ew-resize;box-shadow:0 2px 10px rgba(0,0,0,.5);user-select:none;touch-action:none}
+.tag{position:absolute;top:12px;z-index:640;background:rgba(11,15,13,.85);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;line-height:1.3;pointer-events:none}
+.tag b{display:block;font-size:14px}
+.tag.l{left:12px}.tag.r{right:12px;text-align:right}
+.why{display:grid;grid-template-columns:1fr 1.1fr;gap:26px;align-items:center}
+@media(max-width:860px){.why{grid-template-columns:1fr}#swipeMap{height:440px}}
+.why p{color:var(--ink2)} .why b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -80,7 +103,7 @@ footer{padding:30px 0 60px;color:var(--ink3);font-size:13px;border-top:1px solid
   <div class="lang"><button data-l="en" class="on">EN</button> <button data-l="tr">TR</button></div>
 </div></header>
 
-<div class="wrap hero">
+<div class="hero"><div class="herobg"></div><div class="wrap heroin">
   <div class="kicker" data-i="kicker"></div>
   <h1 data-i="h1"></h1>
   <p class="lead" data-i="lead"></p>
@@ -92,7 +115,75 @@ footer{padding:30px 0 60px;color:var(--ink3);font-size:13px;border-top:1px solid
       <div class="num"><span id="sRad"></span><small data-i="years"></small></div><div class="rng" id="sRadR"></div></div>
   </div>
   <div class="gap" id="gapLine"></div>
-</div>
+</div></div>
+
+
+<section><div class="wrap vid">
+  <video controls preload="metadata" poster="img/og.jpg" src="demo.mp4" aria-label="30-second demo video"></video>
+  <div>
+    <h2 data-i="vidH"></h2>
+    <p class="sub" data-i="vidSub"></p>
+    <div class="btns">
+      <a class="btn" href="https://github.com/emrecakirr/green-illusion" target="_blank" rel="noopener" data-i="btnCode"></a>
+      <a class="btn" href="#method" data-i="btnMethod"></a>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2 data-i="swH"></h2>
+  <p class="sub" data-i="swSub"></p>
+  <div id="swipeMap" role="img" aria-label="Swipe comparison of optical NDVI and NISAR radar over Antalya">
+    <div class="tag l"><b data-i="swL1"></b><span data-i="swL2"></span></div>
+    <div class="tag r"><b data-i="swR1"></b><span data-i="swR2"></span></div>
+    <div class="handle" id="handle"><div class="bar"></div><div class="knob">⇆</div></div>
+  </div>
+  <div class="ctrl"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="perim"> <span data-i="perim"></span></label>
+  <span class="legend" style="margin:0"><span data-i="swNote"></span></span></div>
+</div></section>
+
+<section><div class="wrap why">
+  <div>
+    <h2 data-i="whyRadH"></h2>
+    <p data-i="whyRad1"></p>
+    <p data-i="whyRad2"></p>
+  </div>
+  <svg viewBox="0 0 560 300" role="img" aria-label="Optical light reflects from leaves; L-band radar reaches trunks and branches" style="width:100%;height:auto">
+    <rect x="0" y="0" width="560" height="300" rx="14" fill="#161d1a" stroke="#2a3530"/>
+    <line x1="280" y1="20" x2="280" y2="280" stroke="#2a3530"/>
+    <!-- ground -->
+    <rect x="16" y="246" width="248" height="14" fill="#3b2f25"/><rect x="296" y="246" width="248" height="14" fill="#3b2f25"/>
+    <!-- left: mature forest -->
+    <g>
+      <rect x="86" y="150" width="10" height="96" fill="#6b4b33"/><rect x="176" y="140" width="12" height="106" fill="#6b4b33"/>
+      <line x1="91" y1="185" x2="70" y2="165" stroke="#6b4b33" stroke-width="5"/><line x1="182" y1="180" x2="205" y2="160" stroke="#6b4b33" stroke-width="5"/>
+      <ellipse cx="91" cy="140" rx="46" ry="34" fill="#2f9e44"/><ellipse cx="182" cy="128" rx="50" ry="38" fill="#2f9e44"/>
+      <!-- optical -->
+      <path d="M40 30 L80 104" stroke="#8ce99a" stroke-width="2.5" marker-end="url(#ao)"/><path d="M84 104 L118 38" stroke="#8ce99a" stroke-width="2.5" stroke-dasharray="4 3" marker-end="url(#ao)"/>
+      <!-- radar -->
+      <path d="M150 24 Q160 50 150 76 T150 128 T176 176" fill="none" stroke="#9775fa" stroke-width="3" marker-end="url(#ar)"/>
+      <path d="M188 170 L258 74" stroke="#9775fa" stroke-width="5" marker-end="url(#ar)"/>
+    </g>
+    <!-- right: 5 years after fire -->
+    <g>
+      <rect x="360" y="216" width="6" height="30" fill="#2b2b2b"/><rect x="456" y="206" width="7" height="40" fill="#2b2b2b"/>
+      <ellipse cx="340" cy="236" rx="30" ry="14" fill="#2f9e44"/><ellipse cx="410" cy="232" rx="38" ry="18" fill="#2f9e44"/><ellipse cx="490" cy="236" rx="32" ry="14" fill="#2f9e44"/>
+      <path d="M318 30 L366 214" stroke="#8ce99a" stroke-width="2.5" marker-end="url(#ao)"/><path d="M370 214 L408 46" stroke="#8ce99a" stroke-width="2.5" stroke-dasharray="4 3" marker-end="url(#ao)"/>
+      <path d="M440 24 Q450 60 440 96 T440 168 T452 238" fill="none" stroke="#9775fa" stroke-width="3" marker-end="url(#ar)"/>
+      <path d="M460 236 L500 120" stroke="#9775fa" stroke-width="1.5" stroke-dasharray="3 4" marker-end="url(#ar)"/>
+    </g>
+    <defs>
+      <marker id="ao" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#8ce99a"/></marker>
+      <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#9775fa"/></marker>
+    </defs>
+    <text x="140" y="284" text-anchor="middle" fill="#eef2ef" font-size="14" font-weight="700" id="ilL"></text>
+    <text x="420" y="284" text-anchor="middle" fill="#eef2ef" font-size="14" font-weight="700" id="ilR"></text>
+    <text x="272" y="56" text-anchor="end" fill="#c5b3ff" font-size="12" font-weight="600" id="ilStrong"></text>
+    <text x="530" y="112" text-anchor="end" fill="#c5b3ff" font-size="12" id="ilWeak"></text>
+    <text x="24" y="22" fill="#8ce99a" font-size="12" id="ilGreen1"></text>
+    <text x="304" y="22" fill="#8ce99a" font-size="12" id="ilGreen2"></text>
+  </svg>
+</div></section>
 
 <section><div class="wrap">
   <h2 data-i="mapH"></h2>
@@ -137,7 +228,7 @@ footer{padding:30px 0 60px;color:var(--ink3);font-size:13px;border-top:1px solid
   </div>
 </div></section>
 
-<section class="method"><div class="wrap grid2">
+<section class="method" id="method"><div class="wrap grid2">
   <div>
     <h2 data-i="howH"></h2>
     <ol>
@@ -175,7 +266,14 @@ footer{padding:30px 0 60px;color:var(--ink3);font-size:13px;border-top:1px solid
 <script>
 const D = window.GI_DATA, OBS = D.obs;
 const T = {
-en:{kicker:"NASA Space Apps 2026 · Dancing with the SARs · Antalya, Türkiye",
+en:{ vidH:"30-second demo", vidSub:"Optical vs radar over the 2021 Manavgat burn scar – and what it means for when the forest is really back.", btnCode:"Code & data on GitHub", btnMethod:"How it works ↓", swH:"Two eyes, one forest", swSub:"Same place, same month (August 2026). Left: what an optical satellite sees – greenness. Right: what NISAR’s L-band radar sees – woody structure. Drag the handle across the 2021 Manavgat burn scar (center).",
+ swL1:"OPTICAL · MODIS NDVI", swL2:"“Looks green again”", swR1:"RADAR · NISAR L-band HV", swR2:"“The trees are still missing”",
+ perim:"Show fire scars (MODIS, 2001–2025)", swNote:"Dark in radar = little woody structure. Water and bare rock are also dark.",
+ whyRadH:"Why can radar see what cameras miss?",
+ whyRad1:"Optical sensors measure the color of the top layer. After a fire, grass and shrubs come back within a few years – and they are just as green as pine needles. So the scar disappears from optical maps long before the forest is back.",
+ whyRad2:"NISAR’s L-band radar uses waves about <b>24 cm long</b>. They pass through leaves and bounce off <b>trunks and branches</b>. The cross-polarized echo (HV) grows with the amount of wood. Low HV over green ground means: shrubs, not forest yet. NISAR images every spot on Earth every 12 days, day and night, through smoke and clouds.",
+ ilL:"Mature forest", ilR:"5 years after fire", ilStrong:"strong echo: wood", ilWeak:"weak echo", ilGreen1:"optical: green", ilGreen2:"optical: also green",
+ kicker:"NASA Space Apps 2026 · Dancing with the SARs · Antalya, Türkiye",
  h1:"The forest looks green again.<br>Radar says it isn't back.",
  lead:"After a wildfire, optical satellites see grass and shrubs turn green within a few years and call the forest “recovered”. NISAR’s L-band radar sees through the leaves to trunks and branches – the real structure of a forest. We measured both over Antalya’s burned forests.",
  optSays:"Optical satellite says the forest is back in", radSays:"NISAR radar says the forest is back in", years:"years",
@@ -211,7 +309,14 @@ en:{kicker:"NASA Space Apps 2026 · Dancing with the SARs · Antalya, Türkiye",
  place:"Place (click the map)", avgPlace:"Antalya average", north:"north-facing", south:"south-facing", flat:"flat / mixed",
  outside:"outside the calibrated area – regional average shown", extra:"beyond observed fire conditions, estimate uncertain",
  condH:"Local conditions matter", cond:(e,k)=>`Within each fire, every +350 m of elevation shortens radar recovery time by ~${e}% (higher, wetter, cooler slopes recover faster); north-facing slopes change it by ~${k}%. A slope effect also appeared, but we excluded it: it is most likely a radar viewing-geometry artifact on steep terrain.`},
-tr:{kicker:"NASA Space Apps 2026 · Dancing with the SARs · Antalya, Türkiye",
+tr:{ vidH:"30 saniyelik tanıtım", vidSub:"2021 Manavgat yangın izi üzerinde optik ve radar karşılaştırması – ve ormanın gerçekte ne zaman geri geleceği.", btnCode:"Kod ve veriler GitHub’da", btnMethod:"Nasıl çalışıyor ↓", swH:"İki göz, tek orman", swSub:"Aynı yer, aynı ay (Ağustos 2026). Solda optik uydunun gördüğü – yeşillik. Sağda NISAR L-bandı radarının gördüğü – odunsu yapı. Tutamağı ortadaki 2021 Manavgat yangın izinin üzerinde gezdir.",
+ swL1:"OPTİK · MODIS NDVI", swL2:"“Yeniden yeşil görünüyor”", swR1:"RADAR · NISAR L-bandı HV", swR2:"“Ağaçlar hâlâ yok”",
+ perim:"Yangın izlerini göster (MODIS, 2001–2025)", swNote:"Radarda koyu = az odunsu yapı. Su ve çıplak kaya da koyu görünür.",
+ whyRadH:"Radar, kameranın kaçırdığını nasıl görüyor?",
+ whyRad1:"Optik sensörler en üst katmanın rengini ölçer. Yangından sonra ot ve çalı birkaç yılda geri gelir – ve çam iğnesi kadar yeşildir. Bu yüzden yangın izi, orman geri gelmeden çok önce optik haritalardan silinir.",
+ whyRad2:"NISAR’ın L-bandı radarı yaklaşık <b>24 cm</b> uzunluğunda dalgalar kullanır. Bu dalgalar yaprakların arasından geçip <b>gövde ve dallardan</b> yansır. Çapraz polarizasyonlu yankı (HV) odun miktarıyla artar. Yeşil zemin üzerinde düşük HV şu demek: henüz orman değil, çalı. NISAR Dünya’nın her noktasını 12 günde bir, gece-gündüz, duman ve bulut arasından görüntüler.",
+ ilL:"Olgun orman", ilR:"Yangından 5 yıl sonra", ilStrong:"güçlü yankı: odun", ilWeak:"zayıf yankı", ilGreen1:"optik: yeşil", ilGreen2:"optik: yine yeşil",
+ kicker:"NASA Space Apps 2026 · Dancing with the SARs · Antalya, Türkiye",
  h1:"Orman yeniden yeşil görünüyor.<br>Radar geri gelmediğini söylüyor.",
  lead:"Yangından sonra optik uydular otun ve çalının birkaç yılda yeşerdiğini görür ve ormana “toparlandı” der. NISAR’ın L-bandı radarı yaprakların arkasını, gövdeyi ve dalları – ormanın gerçek yapısını – görür. Antalya’nın yanmış ormanlarında ikisini de ölçtük.",
  optSays:"Optik uydu ormanın geri döneceği süre", radSays:"NISAR radarının söylediği süre", years:"yıl",
@@ -263,6 +368,7 @@ function applyLang(){
   document.getElementById("sOptR").textContent = `${D.opt.lo}–${D.opt.hi}`;
   document.getElementById("sRadR").textContent = `${D.rad.lo}–${D.rad.hi}`;
   document.getElementById("gapLine").innerHTML = t("gap")(Math.round(D.rad.t90 - D.opt.t90));
+  for (const id of ["ilL","ilR","ilStrong","ilWeak","ilGreen1","ilGreen2"]) document.getElementById(id).textContent = t(id);
   table(); drawChart(); calc(); readout(); map.closePopup();
   const ke = K.co.rad.kuzeylik[0];
   document.getElementById("condP").textContent = t("cond")(Math.round((1 - Math.exp(K.co.rad.yukseklik[0])) * 100), (ke >= 0 ? "+" : "") + Math.round((Math.exp(ke) - 1) * 100));
@@ -313,6 +419,38 @@ map.on("click", e => {
     <div class="r"><span>${t("ppBackRad")}</span><span>~${Math.round(now + f.rad)} (${Math.round(f.rad)} ${t("years")})</span></div></div>`).openOn(map);
 });
 document.getElementById("swipe").addEventListener("input", e => { mix = e.target.value / 100; paint(); });
+
+
+/* ---------- swipe map: optical vs NISAR ---------- */
+const B = [[36.6, 30.9], [37.3, 32.2]];
+const sm = L.map("swipeMap", {scrollWheelZoom: false, zoomSnap: 0.25, maxBounds: [[36.3, 30.5], [37.6, 32.6]]}).fitBounds(B);
+sm.createPane("optP"); sm.createPane("radP"); sm.createPane("perP");
+sm.getPane("optP").style.zIndex = 400; sm.getPane("radP").style.zIndex = 410; sm.getPane("perP").style.zIndex = 420;
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {maxZoom: 17, attribution: "Esri, Maxar, Earthstar Geographics · NASA MODIS · NASA-ISRO NISAR"}).addTo(sm);
+L.imageOverlay("img/optik_ndvi.png", B, {pane: "optP", opacity: 0.95}).addTo(sm);
+L.imageOverlay("img/radar_hv.jpg", B, {pane: "radP", opacity: 1}).addTo(sm);
+const perR = L.canvas({pane: "perP"});
+const perL = L.layerGroup(D.px.map(p => L.rectangle([[p[1] - dLat, p[0] - dLon], [p[1] + dLat, p[0] + dLon]], {renderer: perR, stroke: false, fillColor: "#ff7a1a", fillOpacity: 0.35, interactive: false})));
+document.getElementById("perim").addEventListener("change", e => e.target.checked ? perL.addTo(sm) : sm.removeLayer(perL));
+let frac = 0.5;
+const handle = document.getElementById("handle");
+function clip(){
+  const nw = sm.containerPointToLayerPoint([0, 0]), se = sm.containerPointToLayerPoint(sm.getSize());
+  const x = nw.x + (se.x - nw.x) * frac;
+  sm.getPane("radP").style.clip = `rect(${nw.y}px, ${se.x}px, ${se.y}px, ${x}px)`;
+  handle.style.left = (frac * 100) + "%";
+}
+sm.on("move zoom resize zoomanim", clip); clip();
+let dragging = false;
+const knob = handle.querySelector(".knob");
+knob.addEventListener("pointerdown", e => { dragging = true; sm.dragging.disable(); knob.setPointerCapture(e.pointerId); e.preventDefault(); });
+knob.addEventListener("pointermove", e => { if (!dragging) return; const b = sm.getContainer().getBoundingClientRect(); frac = Math.max(0.02, Math.min(0.98, (e.clientX - b.left) / b.width)); clip(); });
+knob.addEventListener("pointerup", () => { dragging = false; sm.dragging.enable(); });
+// gentle intro animation once visible
+let animated = false;
+new IntersectionObserver(es => { if (es[0].isIntersecting && !animated){ animated = true; let t0 = null;
+  const step = ts => { if (!t0) t0 = ts; const k = (ts - t0) / 2200; if (k < 1 && !dragging){ frac = 0.5 + 0.32 * Math.sin(k * Math.PI * 2); clip(); requestAnimationFrame(step); } else if (!dragging){ frac = 0.5; clip(); } };
+  requestAnimationFrame(step); } }, {threshold: 0.5}).observe(document.getElementById("swipeMap"));
 
 /* ---------- chart ---------- */
 const svg = document.getElementById("chart"), tt = document.getElementById("tt");
