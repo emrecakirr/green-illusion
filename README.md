@@ -57,6 +57,7 @@ In **California's northern Sierra Nevada** (13 fires since 2001), optical data s
 Our satellite metric is not identical to what ecologists measure on the ground, so this is a check of direction, not an exact match. Independent field work points the same way as NISAR radar:
 - **Spain, 25 years after the 1994 fires:** only 33 of 131 burned plots had reached a state similar to unburned neighbors in height, cover and biomass (Rodrigues et al. 2024, *Forest Ecology and Management*, doi:10.1016/j.foreco.2023.121587). At 25 years our optical curve says 84% recovered and our radar curve says 58%. The same study found better recovery on north-facing slopes and in wetter, cooler conditions, the same direction as our elevation effect.
 - **Antalya, 2008 Serik–Taşağıl fire (in our data):** a five-year field study found no Turkish red pine regeneration in stands that were young when they burned, and concluded they would stay dominated by other woody plants without planting (Kavgacı et al. 2016, doi:10.3906/tar-1601-21).
+- **Robustness, second radar view:** for Antalya I also processed the NISAR pass from the opposite orbit direction on the same day (20 Aug 2026). Pixel agreement is r = 0.85. Manavgat 2021 shows 13% vs 20% radar recovery, Serik 2008 64% vs 67%, and time to 90% is ~50 vs ~44 years. Both are far above the optical ~31.
 - **California:** field studies document high-severity fires turning Sierra Nevada conifer forest into shrub fields (Richter et al. 2019, doi:10.1002/ecs2.2882), which is what NISAR shows there.
 
 ## Data (all free, all NASA unless noted)
@@ -75,7 +76,7 @@ Our satellite metric is not identical to what ecologists measure on the ground, 
 
 ## Limits
 - The long end of the curves is extrapolated; we do not have 50-year-old burns yet.
-- One NISAR date per region from the first months of public NISAR data.
+- One NISAR date per region from the first months of public NISAR data (Antalya: both orbit directions).
 - Burn severity, soil and rainfall are not in the model yet.
 - Forecasts far from the studied regions are rough guesses, and the app says so.
 
