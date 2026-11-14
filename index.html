@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Green Illusion – NISAR sees when a burned forest is truly back</title>
+<meta name="description" content="NASA Space Apps 2026 · Dancing with the SARs. Optical satellites say a burned forest is back. NISAR L-band radar says it is not.">
+<link rel="stylesheet" href="lib/leaflet.css">
+<style>
+:root{
+  --bg:#0f1412; --panel:#161d1a; --panel2:#1d2622; --line:#2a3530;
+  --ink:#eef2ef; --ink2:#b4bfb9; --ink3:#7f8c85;
+  --opt:#2f9e44; --rad:#9775fa; --burn:#ff7a1a; --accent:#ffb347;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:1000;background:rgba(15,20,18,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:56px;gap:12px}
+.brand{font-weight:700;letter-spacing:.2px}
+.brand small{color:var(--ink3);font-weight:500;margin-left:8px}
+.lang button{background:none;border:1px solid var(--line);color:var(--ink2);padding:4px 10px;border-radius:6px;cursor:pointer;font:inherit;font-size:13px}
+.lang button.on{background:var(--panel2);color:var(--ink);border-color:var(--ink3)}
+.hero{padding:64px 0 36px}
+.kicker{color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;font-size:13px}
+h1{font-size:clamp(34px,6vw,62px);line-height:1.05;margin:10px 0 18px;letter-spacing:-.5px}
+.lead{font-size:clamp(17px,2.2vw,21px);color:var(--ink2);max-width:760px}
+.stats{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center;margin:36px 0 8px;max-width:760px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.stat .lab{font-size:13px;color:var(--ink2);display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.stat .num{font-size:clamp(40px,7vw,64px);font-weight:750;line-height:1;margin-top:8px}
+.stat .num small{font-size:.38em;font-weight:500;color:var(--ink2);margin-left:6px}
+.stat .rng{font-size:13px;color:var(--ink3);margin-top:6px}
+.vs{color:var(--ink3);font-weight:700}
+.gap{margin-top:14px;color:var(--ink);font-size:18px}
+.gap b{color:var(--accent)}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(24px,3.4vw,34px);margin:0 0 8px;letter-spacing:-.2px}
+.sub{color:var(--ink2);margin:0 0 22px;max-width:780px}
+#map{height:560px;border-radius:14px;border:1px solid var(--line)}
+.ctrl{display:flex;align-items:center;gap:14px;margin:16px 0 6px;flex-wrap:wrap}
+.ctrl .side{font-weight:650;display:flex;align-items:center;gap:8px;white-space:nowrap}
+input[type=range]{flex:1;min-width:180px;accent-color:var(--accent);height:28px}
+.legend{display:flex;gap:18px;align-items:center;color:var(--ink2);font-size:13px;flex-wrap:wrap;margin-top:6px}
+.ramp{width:160px;height:10px;border-radius:5px;background:linear-gradient(90deg,rgba(255,122,26,.92),rgba(255,122,26,.12))}
+.readout{margin-top:10px;font-size:15px;color:var(--ink)}
+.readout b{font-size:18px}
+.grid2{display:grid;grid-template-columns:1.35fr 1fr;gap:22px}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.vs{text-align:center}#map{height:440px}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+#chart{width:100%;height:auto;display:block}
+.tt{position:absolute;pointer-events:none;background:#0b0f0d;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--ink);display:none;white-space:nowrap;z-index:5}
+.chartbox{position:relative}
+.calc .big{font-size:22px;font-weight:700;margin:6px 0}
+.calc .row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.calc .row:last-child{border-bottom:0}
+.calc .row span:first-child{color:var(--ink2);display:flex;align-items:center;gap:8px}
+.calc .row span:last-child{font-weight:650;text-align:right}
+.child{margin-top:14px;padding:14px;border-radius:10px;background:var(--panel2);font-size:15px}
+.method ol{padding-left:20px;color:var(--ink2)} .method li{margin:6px 0}
+.method b{color:var(--ink)}
+.honest{border-left:3px solid var(--accent);padding:4px 0 4px 14px;color:var(--ink2)}
+table.t{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
+table.t th{color:var(--ink2);font-weight:600}
+.src li{margin:4px 0;color:var(--ink2)}
+footer{padding:30px 0 60px;color:var(--ink3);font-size:13px;border-top:1px solid var(--line)}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#0b0f0d;color:var(--ink);border:1px solid var(--line)}
+.leaflet-popup-content{margin:12px 14px;font-size:14px;line-height:1.45}
+.pp b{font-size:15px}.pp .r{display:flex;justify-content:space-between;gap:16px}
+.leaflet-container{background:#0b0f0d}
+.leaflet-top,.leaflet-bottom{z-index:400}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand">The Green Illusion <small>NASA Space Apps 2026 · Dancing with the SARs</small></div>
+  <div class="lang"><button data-l="en" class="on">EN</button> <button data-l="tr">TR</button></div>
+</div></header>
+
+<div class="wrap hero">
+  <div class="kicker" data-i="kicker"></div>
+  <h1 data-i="h1"></h1>
+  <p class="lead" data-i="lead"></p>
+  <div class="stats">
+    <div class="stat"><div class="lab"><span class="dot" style="background:var(--opt)"></span><span data-i="optSays"></span></div>
+      <div class="num"><span id="sOpt"></span><small data-i="years"></small></div><div class="rng" id="sOptR"></div></div>
+    <div class="vs">vs</div>
+    <div class="stat"><div class="lab"><span class="dot" style="background:var(--rad)"></span><span data-i="radSays"></span></div>
+      <div class="num"><span id="sRad"></span><small data-i="years"></small></div><div class="rng" id="sRadR"></div></div>
+  </div>
+  <div class="gap" id="gapLine"></div>
+</div>
+
+<section><div class="wrap">
+  <h2 data-i="mapH"></h2>
+  <p class="sub" data-i="mapSub"></p>
+  <div id="map" role="img" aria-label="Map of burned forest pixels in Antalya"></div>
+  <div class="ctrl">
+    <span class="side"><span class="dot" style="background:var(--opt)"></span><span data-i="optEye"></span></span>
+    <input id="swipe" type="range" min="0" max="100" value="0" aria-label="Optical to radar">
+    <span class="side"><span data-i="radEye"></span><span class="dot" style="background:var(--rad)"></span></span>
+  </div>
+  <div class="ctrl" style="margin-top:4px">
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--ink)"><input type="checkbox" id="fcToggle"> <span data-i="fcToggle"></span></label>
+    <span class="legend" id="fcLegend" style="display:none;margin:0"><span data-i="fcFast"></span><span class="ramp" style="background:linear-gradient(90deg,#e5dbff,#5f3dc4)"></span><span data-i="fcSlow"></span></span>
+  </div>
+  <div class="legend"><span data-i="still"></span><span class="ramp"></span><span data-i="back"></span><span style="margin-left:auto" data-i="clickHint"></span></div>
+  <div class="readout" id="readout"></div>
+</div></section>
+
+<section><div class="wrap grid2">
+  <div class="card">
+    <h2 data-i="curveH"></h2>
+    <p class="sub" data-i="curveSub" style="margin-bottom:10px"></p>
+    <div class="chartbox"><svg id="chart" viewBox="0 0 640 380"></svg><div class="tt" id="tt"></div></div>
+    <div class="legend" style="margin-top:8px">
+      <span><span class="dot" style="background:var(--opt)"></span> <span data-i="optName"></span></span>
+      <span><span class="dot" style="background:var(--rad)"></span> <span data-i="radName"></span></span>
+      <span data-i="dotsNote"></span>
+    </div>
+  </div>
+  <div class="card calc">
+    <h2 data-i="calcH"></h2>
+    <p class="sub" data-i="calcSub" style="margin-bottom:8px"></p>
+    <label for="fy" style="color:var(--ink2);font-size:14px" data-i="fireYear"></label>
+    <div class="big" id="fyv"></div>
+    <input id="fy" type="range" min="1990" max="2030" value="2021" style="width:100%">
+    <div class="row"><span><span class="dot" style="background:var(--opt)"></span><span data-i="optToday"></span></span><span id="cOptNow"></span></div>
+    <div class="row"><span><span class="dot" style="background:var(--rad)"></span><span data-i="radToday"></span></span><span id="cRadNow"></span></div>
+    <div class="row"><span><span class="dot" style="background:var(--opt)"></span><span data-i="optBack"></span></span><span id="cOptY"></span></div>
+    <div class="row"><span><span class="dot" style="background:var(--rad)"></span><span data-i="radBack"></span></span><span id="cRadY"></span></div>
+    <div class="row"><span data-i="place"></span><span id="cPlace" style="font-weight:500;font-size:14px"></span></div>
+    <div class="child" id="child"></div>
+  </div>
+</div></section>
+
+<section class="method"><div class="wrap grid2">
+  <div>
+    <h2 data-i="howH"></h2>
+    <ol>
+      <li data-i="m1"></li><li data-i="m2"></li><li data-i="m3"></li><li data-i="m4"></li><li data-i="m5"></li>
+    </ol>
+    <p class="honest" data-i="honest"></p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0" data-i="tblH"></h3>
+    <table class="t" id="tbl"></table>
+    <h3 data-i="condH"></h3>
+    <p style="color:var(--ink2);margin:0 0 10px" id="condP"></p>
+    <h3 data-i="whyH"></h3>
+    <p style="color:var(--ink2);margin:0" data-i="why"></p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2 data-i="dataH"></h2>
+  <ul class="src">
+    <li><b>NISAR L2 GCOV</b> (NASA-ISRO, L-band, 20 Aug 2026, granule NISAR_L2_PR_GCOV_028_108_D_070_…_20260820T164901) – <a href="https://search.asf.alaska.edu/#/?dataset=NISAR" target="_blank" rel="noopener">ASF DAAC</a> · <a href="https://nisar-docs.asf.alaska.edu/" target="_blank" rel="noopener">NISAR Data User Guide</a></li>
+    <li><b>MODIS MCD64A1 v061</b> burned area, 2001–2025 – <a href="https://www.earthdata.nasa.gov/data/catalog/lpcloud-mcd64a1-061" target="_blank" rel="noopener">NASA LP DAAC</a></li>
+    <li><b>MODIS MOD13Q1 v061</b> NDVI, Aug 2026 – <a href="https://www.earthdata.nasa.gov/data/catalog/lpcloud-mod13q1-061" target="_blank" rel="noopener">NASA LP DAAC</a></li>
+    <li><b>NASADEM</b> 30 m elevation (slope, aspect) – <a href="https://www.earthdata.nasa.gov/data/catalog/lpcloud-nasadem-hgt-001" target="_blank" rel="noopener">NASA LP DAAC</a></li>
+    <li data-i="lit"></li>
+    <li data-i="tools"></li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap" data-i="foot"></div></footer>
+
+<script src="lib/leaflet.js"></script>
+<script src="data.js"></script>
+<script src="kosul.js"></script>
+<script>
+const D = window.GI_DATA, OBS = D.obs;
+const T = {
+en:{kicker:"NASA Space Apps 2026 · Dancing with the SARs · Antalya, Türkiye",
+ h1:"The forest looks green again.<br>Radar says it isn't back.",
+ lead:"After a wildfire, optical satellites see grass and shrubs turn green within a few years and call the forest “recovered”. NISAR’s L-band radar sees through the leaves to trunks and branches – the real structure of a forest. We measured both over Antalya’s burned forests.",
+ optSays:"Optical satellite says the forest is back in", radSays:"NISAR radar says the forest is back in", years:"years",
+ gap:(g)=>`That gap of <b>~${g} years</b> is the <b>Green Illusion</b>.`,
+ mapH:"See the illusion", mapSub:"Every square is a 500 m forest pixel that burned since 2001 (MODIS). Orange = forest structure still missing. Drag the slider from the optical view to the radar view.",
+ optEye:"Optical eye", radEye:"Radar eye (NISAR)", still:"Still burned", back:"Recovered", clickHint:"Tip: click any square – or any unburned spot",
+ readout:(v,o,r)=>`Viewing <b>${v}</b>. Area that still looks burned (recovery < 50%): <b>${o} km²</b> of ${r} km² burned.`,
+ vOpt:"optical", vRad:"radar", vMix:"a blend",
+ curveH:"Recovery curve", curveSub:"Each dot is one fire generation measured today (space-for-time). Bars: middle 50% of pixels.",
+ optName:"Optical NDVI (MODIS)", radName:"Radar HV (NISAR)", dotsNote:"dot size = number of pixels",
+ xAx:"Years since fire", yAx:"Recovery", ttY:"year",
+ calcH:"What if it burns?", calcSub:"Pick a fire year, then click any forest on the map to use its local conditions (elevation, slope direction). Calibrated on Antalya’s Mediterranean pine forests.",
+ fireYear:"Fire year", optToday:"Optical recovery in 2026", radToday:"Radar recovery in 2026", optBack:"Optical: forest back (90%)", radBack:"Radar: forest back (90%)",
+ notYet:"fire not yet happened",
+ child:(y,a,ry)=>`A child born in <b>${y}</b> will be <b>${a} years old</b> in <b>${ry}</b>, when radar says the forest is truly back.`,
+ howH:"How it works",
+ m1:"<b>When did it burn?</b> MODIS MCD64A1 monthly burned-area maps (2001–2025) give each 500 m pixel its last fire date.",
+ m2:"<b>What does it look like now?</b> MODIS NDVI (Aug 2026) measures greenness; NISAR GCOV (20 Aug 2026) measures L-band HV/HH backscatter – sensitive to woody structure.",
+ m3:"<b>Compared with what?</b> Reference = unburned forest within 5 km of the burns.",
+ m4:"<b>Space-for-time:</b> forests that burned 5 and 18 years ago, seen side by side today, become points on one recovery curve.",
+ m5:"<b>Model:</b> value(t) = reference − (reference − v₀)·e<sup>−t/τ</sup>; time to 90% = τ·ln10; bootstrap for uncertainty.",
+ honest:"Honest limits: the curve rests mainly on two large fires (2021 Manavgat, 2008 Serik), so the long-term part is an extrapolation; one NISAR date and one orbit direction; terrain effects not corrected. Pixel bootstrap intervals are likely too narrow. Next: more NISAR dates, ascending orbit, Muğla & İzmir fires.",
+ tblH:"Measured in Antalya", whyH:"Why it matters",
+ why:"Reforestation pledges, carbon credits and fire-recovery plans are often judged by how green a burn scar looks. A tool that measures structure – not color – keeps everyone honest. COP31 is meeting in Antalya this very week; the same method works for any forest NISAR sees, every 12 days.",
+ thAge:"Fire (years ago)", thN:"pixels", thO:"Optical", thR:"Radar",
+ dataH:"NASA data & sources",
+ lit:"Literature: Bousquet et al. 2022, <i>Biogeosciences</i> 19:3317 (L-band sees trunks; dense-forest recovery slower than optical suggests); Tanase et al. 2011, <i>Remote Sensing of Environment</i>.",
+ tools:"Tools: Python (earthaccess, asf_search, h5py, pyhdf, numpy, scipy, pyproj, matplotlib), Leaflet, Esri World Imagery basemap. AI assistance: Claude (Anthropic) helped with code, analysis and text; all results come from the NASA data above.",
+ foot:"The Green Illusion · Emre Çakır · NASA Space Apps Challenge 2026 · Not an official NASA product. Satellite basemap © Esri, Maxar, Earthstar Geographics.",
+ ppBurn:"Burned", ppOpt:"Optical recovery", ppRad:"Radar recovery", ppBackOpt:"Optical: back by", ppBackRad:"Radar: back by",
+ ppNew:"If this forest burned today", ppNote:"(Mediterranean pine model)",
+ fcToggle:"Show forecast map: recovery time by local conditions (radar)", fcFast:"faster", fcSlow:"slower",
+ place:"Place (click the map)", avgPlace:"Antalya average", north:"north-facing", south:"south-facing", flat:"flat / mixed",
+ outside:"outside the calibrated area – regional average shown", extra:"beyond observed fire conditions, estimate uncertain",
+ condH:"Local conditions matter", cond:(e,k)=>`Within each fire, every +350 m of elevation shortens radar recovery time by ~${e}% (higher, wetter, cooler slopes recover faster); north-facing slopes change it by ~${k}%. A slope effect also appeared, but we excluded it: it is most likely a radar viewing-geometry artifact on steep terrain.`},
+tr:{kicker:"NASA Space Apps 2026 · Dancing with the SARs · Antalya, Türkiye",
+ h1:"Orman yeniden yeşil görünüyor.<br>Radar geri gelmediğini söylüyor.",
+ lead:"Yangından sonra optik uydular otun ve çalının birkaç yılda yeşerdiğini görür ve ormana “toparlandı” der. NISAR’ın L-bandı radarı yaprakların arkasını, gövdeyi ve dalları – ormanın gerçek yapısını – görür. Antalya’nın yanmış ormanlarında ikisini de ölçtük.",
+ optSays:"Optik uydu ormanın geri döneceği süre", radSays:"NISAR radarının söylediği süre", years:"yıl",
+ gap:(g)=>`Aradaki <b>~${g} yıl</b>: işte <b>Yeşil Yanılsama</b>.`,
+ mapH:"Yanılsamayı gör", mapSub:"Her kare 2001’den beri yanmış 500 m’lik bir orman pikseli (MODIS). Turuncu = orman yapısı hâlâ eksik. Kaydırıcıyı optik görünümden radar görünümüne sürükle.",
+ optEye:"Optik göz", radEye:"Radar gözü (NISAR)", still:"Hâlâ yanık", back:"Toparlandı", clickHint:"İpucu: bir kareye – ya da yanmamış bir yere – tıkla",
+ readout:(v,o,r)=>`Görünüm: <b>${v}</b>. Hâlâ yanık görünen alan (toparlanma < %50): <b>${o} km²</b> / toplam ${r} km² yanık.`,
+ vOpt:"optik", vRad:"radar", vMix:"karışık",
+ curveH:"Toparlanma eğrisi", curveSub:"Her nokta bugün ölçülen bir yangın kuşağı (zaman yerine mekân). Çubuklar: piksellerin ortadaki %50’si.",
+ optName:"Optik NDVI (MODIS)", radName:"Radar HV (NISAR)", dotsNote:"nokta boyutu = piksel sayısı",
+ xAx:"Yangından bu yana geçen yıl", yAx:"Toparlanma", ttY:"yıl",
+ calcH:"Ya yanarsa?", calcSub:"Bir yangın yılı seç, sonra haritada herhangi bir ormana tıkla: o yerin koşulları (yükseklik, yamaç yönü) kullanılır. Antalya’nın Akdeniz çam ormanlarına göre ayarlı.",
+ fireYear:"Yangın yılı", optToday:"Optik toparlanma (2026)", radToday:"Radar toparlanma (2026)", optBack:"Optik: orman geri (%90)", radBack:"Radar: orman geri (%90)",
+ notYet:"yangın henüz olmadı",
+ child:(y,a,ry)=>`<b>${y}</b> yılında doğan bir çocuk, radarın “orman gerçekten geri geldi” diyeceği <b>${ry}</b> yılında <b>${a} yaşında</b> olacak.`,
+ howH:"Nasıl çalışıyor",
+ m1:"<b>Ne zaman yandı?</b> MODIS MCD64A1 aylık yanık alan haritaları (2001–2025) her 500 m piksele son yangın tarihini verir.",
+ m2:"<b>Şimdi nasıl görünüyor?</b> MODIS NDVI (Ağu 2026) yeşilliği; NISAR GCOV (20 Ağu 2026) odunsu yapıya duyarlı L-bandı HV/HH geri saçılımını ölçer.",
+ m3:"<b>Neyle kıyasla?</b> Referans = yanık alanlara 5 km mesafedeki yanmamış orman.",
+ m4:"<b>Zaman yerine mekân:</b> 5 ve 18 yıl önce yanmış ormanlar bugün yan yana bakılınca tek bir toparlanma eğrisinin noktaları olur.",
+ m5:"<b>Model:</b> değer(t) = referans − (referans − v₀)·e<sup>−t/τ</sup>; %90 süresi = τ·ln10; belirsizlik için bootstrap.",
+ honest:"Dürüst sınırlar: eğri esas olarak iki büyük yangına (2021 Manavgat, 2008 Serik) dayanıyor, uzun vadeli kısım bir tahmin; tek NISAR tarihi ve tek yörünge yönü; arazi etkisi düzeltilmedi. Piksel bootstrap aralıkları muhtemelen fazla dar. Sonraki adım: daha çok NISAR tarihi, yükselen yörünge, Muğla ve İzmir yangınları.",
+ tblH:"Antalya’da ölçülen", whyH:"Neden önemli",
+ why:"Ağaçlandırma taahhütleri, karbon kredileri ve yangın sonrası planlar çoğu zaman yanık alanın ne kadar yeşil göründüğüne göre değerlendirilir. Rengi değil yapıyı ölçen bir araç herkes için şeffaflık sağlar. COP31 tam bu hafta Antalya’da; aynı yöntem NISAR’ın 12 günde bir gördüğü her ormanda çalışır.",
+ thAge:"Yangın (yıl önce)", thN:"piksel", thO:"Optik", thR:"Radar",
+ dataH:"NASA verileri ve kaynaklar",
+ lit:"Literatür: Bousquet ve ark. 2022, <i>Biogeosciences</i> 19:3317 (L-bandı gövdeyi görür; yoğun ormanın toparlanması optiğin gösterdiğinden yavaş); Tanase ve ark. 2011, <i>Remote Sensing of Environment</i>.",
+ tools:"Araçlar: Python (earthaccess, asf_search, h5py, pyhdf, numpy, scipy, pyproj, matplotlib), Leaflet, Esri World Imagery altlık. Yapay zekâ desteği: Claude (Anthropic) kod, analiz ve metinde yardımcı oldu; tüm sonuçlar yukarıdaki NASA verilerinden gelir.",
+ foot:"The Green Illusion · Emre Çakır · NASA Space Apps Challenge 2026 · Resmî bir NASA ürünü değildir. Uydu altlığı © Esri, Maxar, Earthstar Geographics.",
+ ppBurn:"Yandı", ppOpt:"Optik toparlanma", ppRad:"Radar toparlanma", ppBackOpt:"Optik: geri dönüş", ppBackRad:"Radar: geri dönüş",
+ ppNew:"Bu orman bugün yansaydı", ppNote:"(Akdeniz çamı modeli)",
+ fcToggle:"Tahmin haritasını göster: yerel koşullara göre toparlanma süresi (radar)", fcFast:"daha hızlı", fcSlow:"daha yavaş",
+ place:"Yer (haritaya tıkla)", avgPlace:"Antalya ortalaması", north:"kuzey yamaç", south:"güney yamaç", flat:"düz / karışık",
+ outside:"ayarlı alanın dışında – bölge ortalaması gösteriliyor", extra:"gözlenen yangın koşullarının dışında, tahmin belirsiz",
+ condH:"Yerel koşullar önemli", cond:(e,k)=>`Her yangının kendi içinde, yükseklikteki her +350 m radar toparlanma süresini ~%${e} kısaltıyor (daha yüksek, serin ve yağışlı yamaçlar daha hızlı toparlanıyor); kuzey yamaç etkisi ~%${k}. Bir eğim etkisi de çıktı ama dahil etmedik: büyük olasılıkla dik arazide radarın bakış geometrisinden kaynaklanan bir hata.`}
+};
+let L_ = (navigator.language||"en").toLowerCase().startsWith("tr") ? "tr" : "en";
+const t = k => T[L_][k];
+const pct = r => Math.round(Math.max(0, Math.min(1, r)) * 100) + "%";
+const R = (age, tau) => age <= 0 ? 0 : 1 - Math.exp(-age / tau);
+const yrsTo90 = (r, tau) => { const rr = Math.max(0, Math.min(0.9, r)); return Math.max(0, tau * Math.LN10 + tau * Math.log(1 - rr)); };
+
+function applyLang(){
+  document.documentElement.lang = L_;
+  document.querySelectorAll("[data-i]").forEach(e => { const v = t(e.dataset.i); if (typeof v === "string") e.innerHTML = v; });
+  document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.l === L_));
+  document.getElementById("sOpt").textContent = Math.round(D.opt.t90);
+  document.getElementById("sRad").textContent = Math.round(D.rad.t90);
+  document.getElementById("sOptR").textContent = `${D.opt.lo}–${D.opt.hi}`;
+  document.getElementById("sRadR").textContent = `${D.rad.lo}–${D.rad.hi}`;
+  document.getElementById("gapLine").innerHTML = t("gap")(Math.round(D.rad.t90 - D.opt.t90));
+  table(); drawChart(); calc(); readout(); map.closePopup();
+  const ke = K.co.rad.kuzeylik[0];
+  document.getElementById("condP").textContent = t("cond")(Math.round((1 - Math.exp(K.co.rad.yukseklik[0])) * 100), (ke >= 0 ? "+" : "") + Math.round((Math.exp(ke) - 1) * 100));
+}
+document.querySelectorAll(".lang button").forEach(b => b.onclick = () => { L_ = b.dataset.l; applyLang(); });
+
+/* ---------- map ---------- */
+const map = L.map("map", {preferCanvas: true, scrollWheelZoom: false}).setView([36.95, 31.45], 10);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  {maxZoom: 17, attribution: "Tiles © Esri — Esri, Maxar, Earthstar Geographics"}).addTo(map);
+const rend = L.canvas({padding: 0.3});
+const dLat = 0.00435 / 2, dLon = 0.00545 / 2;
+let mix = 0;
+const cells = D.px.map(p => {
+  const rect = L.rectangle([[p[1] - dLat, p[0] - dLon], [p[1] + dLat, p[0] + dLon]],
+    {renderer: rend, stroke: false, fillColor: "#ff7a1a", fillOpacity: 0.5});
+  rect.p = p;
+  rect.on("click", e => { L.DomEvent.stopPropagation(e); popPixel(rect.p, e.latlng); });
+  rect.addTo(map); return rect;
+});
+function cur(p){ return (1 - mix) * p[3] + mix * p[4]; }
+function paint(){
+  for (const c of cells){ const r = Math.max(0, Math.min(1, cur(c.p))); c.setStyle({fillOpacity: 0.1 + 0.82 * (1 - r)}); }
+  readout();
+}
+function readout(){
+  const km2 = 0.2146;
+  let o = 0; for (const c of cells) if (cur(c.p) < 0.5) o++;
+  const v = mix < 0.15 ? t("vOpt") : mix > 0.85 ? t("vRad") : t("vMix");
+  document.getElementById("readout").innerHTML = t("readout")(v, Math.round(o * km2), Math.round(D.px.length * km2));
+}
+function popPixel(p, ll){
+  const year = Math.floor(p[2]), age = OBS - p[2];
+  const yo = Math.round(OBS + yrsTo90(p[3], D.opt.tau)), yr = Math.round(OBS + yrsTo90(p[4], D.rad.tau));
+  L.popup().setLatLng(ll).setContent(`<div class="pp"><b>${t("ppBurn")}: ${year}</b> (${age.toFixed(0)} ${t("years")})
+    <div class="r"><span>${t("ppOpt")}</span><span style="color:#8ce99a">${pct(p[3])}</span></div>
+    <div class="r"><span>${t("ppRad")}</span><span style="color:#c5b3ff">${pct(p[4])}</span></div>
+    <div class="r"><span>${t("ppBackOpt")}</span><span>~${yo}</span></div>
+    <div class="r"><span>${t("ppBackRad")}</span><span>~${yr}</span></div></div>`).openOn(map);
+}
+map.on("click", e => {
+  const now = 2026, c = cellAt(e.latlng.lat, e.latlng.lng);
+  if (c){ place = c; calc(); }
+  const f = c ? forecast(c) : {opt: D.opt.t90, rad: D.rad.t90};
+  L.popup().setLatLng(e.latlng).setContent(`<div class="pp"><b>${t("ppNew")}</b>
+    <div style="color:#7f8c85;font-size:12px;margin-bottom:4px">${c ? placeText(c) : t("outside")}</div>
+    <div class="r"><span>${t("ppBackOpt")}</span><span>~${Math.round(now + f.opt)} (${Math.round(f.opt)} ${t("years")})</span></div>
+    <div class="r"><span>${t("ppBackRad")}</span><span>~${Math.round(now + f.rad)} (${Math.round(f.rad)} ${t("years")})</span></div></div>`).openOn(map);
+});
+document.getElementById("swipe").addEventListener("input", e => { mix = e.target.value / 100; paint(); });
+
+/* ---------- chart ---------- */
+const svg = document.getElementById("chart"), tt = document.getElementById("tt");
+const W = 640, H = 380, m = {l: 54, r: 18, t: 16, b: 46}, XM = 60;
+const X = a => m.l + a / XM * (W - m.l - m.r), Y = r => m.t + (1.1 - r) / 1.3 * (H - m.t - m.b);
+function el(n, a, txt){ const e = document.createElementNS("http://www.w3.org/2000/svg", n); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; }
+function drawChart(){
+  svg.innerHTML = "";
+  for (const r of [0, .25, .5, .75, 1]){ el("line", {x1: m.l, x2: W - m.r, y1: Y(r), y2: Y(r), stroke: r === 1 ? "#4a5650" : "#26302b", "stroke-width": 1, "stroke-dasharray": r === 1 ? "4 4" : ""}); el("text", {x: m.l - 8, y: Y(r) + 4, "text-anchor": "end", fill: "#7f8c85", "font-size": 12}, Math.round(r * 100) + "%"); }
+  for (let a = 0; a <= XM; a += 10) el("text", {x: X(a), y: H - m.b + 18, "text-anchor": "middle", fill: "#7f8c85", "font-size": 12}, a);
+  el("text", {x: (m.l + W - m.r) / 2, y: H - 6, "text-anchor": "middle", fill: "#b4bfb9", "font-size": 13}, t("xAx"));
+  el("line", {x1: m.l, x2: W - m.r, y1: Y(0.9), y2: Y(0.9), stroke: "#3a4640", "stroke-dasharray": "2 4"});
+  el("text", {x: W - m.r - 4, y: Y(0.9) - 6, "text-anchor": "end", fill: "#7f8c85", "font-size": 11}, "90%");
+  for (const [k, col] of [["opt", "#2f9e44"], ["rad", "#9775fa"]]){
+    const tau = D[k].tau; let d = "";
+    for (let a = 0; a <= XM; a += 0.5) d += (a ? "L" : "M") + X(a).toFixed(1) + "," + Y(R(a, tau)).toFixed(1);
+    el("path", {d, fill: "none", stroke: col, "stroke-width": 2.5});
+    const t90 = D[k].t90;
+    el("line", {x1: X(t90), x2: X(t90), y1: Y(0.9), y2: Y(-0.05), stroke: col, "stroke-width": 1.5, "stroke-dasharray": "3 3"});
+    el("text", {x: X(t90), y: Y(-0.1), "text-anchor": "middle", fill: "#eef2ef", "font-size": 12, "font-weight": 600}, `~${Math.round(t90)}`);
+    const off = k === "opt" ? -5 : 5;
+    for (const [a, g] of Object.entries(D[k].g)){
+      const x = X(+a + 0.5) + off;
+      el("line", {x1: x, x2: x, y1: Y(Math.min(1.1, g.q75)), y2: Y(Math.max(-0.2, g.q25)), stroke: col, "stroke-width": 2, opacity: .55});
+      el("circle", {cx: x, cy: Y(g.m), r: Math.max(5, Math.min(11, Math.sqrt(g.n) / 5)), fill: col, stroke: "#161d1a", "stroke-width": 2});
+    }
+  }
+  el("text", {x: X(24), y: Y(R(24, D.opt.tau)) - 12, fill: "#8ce99a", "font-size": 13, "font-weight": 600}, t("optName"));
+  el("text", {x: X(38), y: Y(R(38, D.rad.tau)) + 22, fill: "#c5b3ff", "font-size": 13, "font-weight": 600}, t("radName"));
+  const cross = el("line", {x1: 0, x2: 0, y1: m.t, y2: H - m.b, stroke: "#b4bfb9", "stroke-width": 1, opacity: 0});
+  const hit = el("rect", {x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent"});
+  hit.addEventListener("mousemove", ev => {
+    const b = svg.getBoundingClientRect(), sx = (ev.clientX - b.left) / b.width * W;
+    const a = Math.max(0, Math.min(XM, (sx - m.l) / (W - m.l - m.r) * XM));
+    cross.setAttribute("x1", X(a)); cross.setAttribute("x2", X(a)); cross.setAttribute("opacity", .5);
+    tt.style.display = "block";
+    tt.innerHTML = `<b>${a.toFixed(0)} ${t("ttY")}</b><br><span style="color:#8ce99a">●</span> ${t("optName")}: ${pct(R(a, D.opt.tau))}<br><span style="color:#c5b3ff">●</span> ${t("radName")}: ${pct(R(a, D.rad.tau))}`;
+    const px = (ev.clientX - b.left), left = px > b.width * 0.6 ? px - tt.offsetWidth - 12 : px + 12;
+    tt.style.left = left + "px"; tt.style.top = Math.max(0, ev.clientY - b.top - 30) + "px";
+  });
+  hit.addEventListener("mouseleave", () => { tt.style.display = "none"; cross.setAttribute("opacity", 0); });
+}
+
+/* ---------- table ---------- */
+function table(){
+  let h = `<tr><th>${t("thAge")}</th><th>${t("thN")}</th><th>${t("thO")}</th><th>${t("thR")}</th></tr>`;
+  for (const a of Object.keys(D.opt.g)) h += `<tr><td>~${a}</td><td>${D.opt.g[a].n}</td><td>${pct(D.opt.g[a].m)}</td><td>${pct(D.rad.g[a].m)}</td></tr>`;
+  h += `<tr><td><b>90%</b></td><td></td><td><b>~${Math.round(D.opt.t90)} ${t("years")}</b></td><td><b>~${Math.round(D.rad.t90)} ${t("years")}</b></td></tr>`;
+  document.getElementById("tbl").innerHTML = h;
+}
+
+
+/* ---------- condition-based forecast ---------- */
+const K = window.GI_KOSUL;
+const kIdx = new Map(); for (const c of K.cells) kIdx.set(Math.round(c[1] / K.step) + "_" + Math.round(c[0] / K.step), c);
+function cellAt(lat, lon){
+  for (const [dy, dx] of [[0,0],[1,0],[-1,0],[0,1],[0,-1]]){
+    const c = kIdx.get((Math.round(lat / K.step) + dy) + "_" + (Math.round(lon / K.step) + dx)); if (c) return c; }
+  return null;
+}
+function forecast(c){
+  // slope excluded (likely radar geometry artifact); elevation + north-facing as relative multipliers
+  const zs = (c[2] - K.std.z[0]) / K.std.z[1], ks = (c[4] - K.std.kz[0]) / K.std.kz[1];
+  const out = {};
+  for (const k of ["opt", "rad"]){
+    const co = K.co[k];
+    let m = Math.exp(co.yukseklik[0] * Math.max(-1.5, Math.min(1.5, zs)) + co.kuzeylik[0] * Math.max(-2, Math.min(2, ks)));
+    m = Math.max(0.5, Math.min(2, m));
+    out[k] = D[k].t90 * m;
+  }
+  out.extra = Math.abs(zs) > 1.5;
+  return out;
+}
+let place = null;
+function placeText(c){ const ex = forecast(c).extra; return `${c[2]} m · ${c[4] > 0.15 ? t("north") : c[4] < -0.15 ? t("south") : t("flat")}${ex ? " · " + t("extra") : ""}`; }
+const fcLayer = L.layerGroup();
+for (const c of K.cells){
+  const f = forecast(c), v = Math.max(0, Math.min(1, (f.rad - 25) / 50));
+  const col = `rgb(${Math.round(229 - v * (229 - 95))},${Math.round(219 - v * (219 - 61))},${Math.round(255 - v * (255 - 196))})`;
+  L.rectangle([[c[1] - K.step / 2, c[0] - K.step / 2], [c[1] + K.step / 2, c[0] + K.step / 2]],
+    {renderer: rend, stroke: false, fillColor: col, fillOpacity: 0.55, interactive: false}).addTo(fcLayer);
+}
+document.getElementById("fcToggle").addEventListener("change", e => {
+  if (e.target.checked){ fcLayer.addTo(map); cells.forEach(c => c.bringToFront()); } else map.removeLayer(fcLayer);
+  document.getElementById("fcLegend").style.display = e.target.checked ? "flex" : "none";
+});
+
+/* ---------- calculator ---------- */
+const fy = document.getElementById("fy");
+function calc(){
+  const y = +fy.value, age = OBS - (y + 0.6);
+  const f = place ? forecast(place) : {opt: D.opt.t90, rad: D.rad.t90};
+  const tauO = f.opt / Math.LN10, tauR = f.rad / Math.LN10;
+  document.getElementById("fyv").textContent = y;
+  document.getElementById("cOptNow").textContent = age > 0 ? pct(R(age, tauO)) : t("notYet");
+  document.getElementById("cRadNow").textContent = age > 0 ? pct(R(age, tauR)) : t("notYet");
+  const yo = Math.round(y + f.opt), yr = Math.round(y + f.rad);
+  document.getElementById("cOptY").textContent = "~" + yo;
+  document.getElementById("cRadY").textContent = "~" + yr;
+  document.getElementById("cPlace").textContent = place ? placeText(place) : t("avgPlace");
+  document.getElementById("child").innerHTML = t("child")(y, yr - y, yr);
+}
+fy.addEventListener("input", calc);
+
+applyLang(); paint();
+</script>
+</body>
+</html>
