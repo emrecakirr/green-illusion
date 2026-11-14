@@ -19,7 +19,7 @@ en: {
  gapTxt: (g) => `For about <b>${g} years</b> this place would look recovered from space while the forest is still missing. That gap is the green illusion.`,
  child: (y) => `A child born the year it burns would be <b>${y}</b> when the forest is back.`,
  placeChart: "Recovery over time at this place",
- warnSea: "This point looks like water or sea level. Try a spot on land.", warnFlat: "This spot is perfectly flat, so it is most likely a lake or open water. Try a forested slope nearby.",
+ warnSea: "This point looks like water or sea level. Try a spot on land.", jitter: "Two nearby points can differ by a few years, because the forecast follows the elevation and the slope direction of each exact spot. The real uncertainty is larger than that, so read the dates as approximate.", warnFlat: "This spot is perfectly flat, so it is most likely a lake or open water. Try a forested slope nearby.",
  warnFar: "This place is far from the forests we studied, so treat the numbers as a rough guess.",
  warnHigh: "This elevation is outside what we saw in burned areas, so the estimate is less certain.",
  warnFail: "Could not read the terrain here (no internet or no data). Showing the average for the closest forest type.",
@@ -90,7 +90,7 @@ tr: {
  gapTxt: (g) => `Yaklaşık <b>${g} yıl</b> boyunca burası uzaydan bakınca toparlanmış görünecek, ama orman hâlâ eksik olacak. Bu fark, yeşil yanılsama.`,
  child: (y) => `Yangın yılında doğan bir çocuk, orman geri geldiğinde <b>${y}</b> yaşında olacak.`,
  placeChart: "Bu noktada zamanla toparlanma",
- warnSea: "Bu nokta su ya da deniz seviyesi gibi görünüyor. Karada bir yer dene.", warnFlat: "Bu nokta tamamen düz, büyük ihtimalle bir göl ya da su yüzeyi. Yakındaki ormanlık bir yamaca tıkla.",
+ warnSea: "Bu nokta su ya da deniz seviyesi gibi görünüyor. Karada bir yer dene.", jitter: "Birbirine yakın iki nokta birkaç yıl farklı çıkabilir, çünkü tahmin her noktanın kendi yüksekliğine ve yamaç yönüne göre yapılıyor. Gerçek belirsizlik bundan daha büyük, bu yüzden tarihleri yaklaşık olarak okuyun.", warnFlat: "Bu nokta tamamen düz, büyük ihtimalle bir göl ya da su yüzeyi. Yakındaki ormanlık bir yamaca tıkla.",
  warnFar: "Burası incelediğimiz ormanlardan uzak, rakamları kaba bir tahmin olarak düşün.",
  warnHigh: "Bu yükseklik yanık alanlarda gördüğümüz aralığın dışında, tahmin daha belirsiz.",
  warnFail: "Bu noktanın arazisi okunamadı (internet ya da veri yok). En yakın orman tipinin ortalaması gösteriliyor.",
@@ -221,7 +221,7 @@ async function pick(lat, lon){
     <div>${gap == null ? t("noTrendTxt") : t("gapTxt")(gap)}</div>
     <div class="note" style="margin-top:12px">${t("placeChart")}</div>
     <svg id="placeChart" viewBox="0 0 440 190" style="width:100%;height:auto"></svg>
-    ${f.rad == null ? "" : `<div class="note">${t("child")(Math.round(f.rad))}</div>`}
+    ${f.rad == null ? "" : `<div class="note">${t("child")(Math.round(f.rad))}</div>`}<div class="note" style="margin-top:6px">${t("jitter")}</div>
     ${fail ? `<div class="warn">${t("warnFail")}</div>` : ""}${f.warn.map(w => `<div class="warn">${t(w)}</div>`).join("")}`;
   drawPlace(f);
 }
@@ -325,7 +325,7 @@ new IntersectionObserver(es => { if (es[0].isIntersecting && !animated){ animate
 /* ---------------- 4. EVIDENCE CHART ---------------- */
 const ev = document.getElementById("evChart"), tt = document.getElementById("tt");
 function drawEvidence(){
-  const W = 600, H = 380, m = {l: 50, r: 16, t: 16, b: 46}, XM = 60;
+  const W = 600, H = 380, m = {l: 50, r: 16, t: 16, b: 46}, XM = Math.max(60, Math.ceil(G.groups.med.rad.t90 / 10) * 10 + 10);
   const X = a => m.l + a / XM * (W - m.l - m.r), Y = r => m.t + (1.05 - r) / 1.15 * (H - m.t - m.b);
   const g = G.groups.med; const tO = g.opt.tau, tR = g.rad.tau;
   let h = "";
