@@ -9,9 +9,7 @@ import glob, json, os, importlib.util
 import numpy as np
 
 KLASOR = os.path.dirname(os.path.abspath(__file__))
-DATA = os.path.join(KLASOR, "data")
-OUT = os.path.join(KLASOR, "web", "img")
-BATI, GUNEY, DOGU, KUZEY = 30.9, 36.6, 32.2, 37.3
+from bolge import BATI, GUNEY, DOGU, KUZEY, DATA, NISAR_DIR, WEBIMG as OUT
 ADIM = 0.001  # ~100 m
 
 
@@ -36,7 +34,7 @@ def main():
     import h5py
     from pyproj import Transformer
     hv = np.full(LO.shape, np.nan, np.float32)
-    for d in sorted(glob.glob(os.path.join(DATA, "nisar_gcov", "*.h5"))):
+    for d in sorted(glob.glob(os.path.join(NISAR_DIR, "*.h5"))):
         with h5py.File(d, "r") as f:
             yollar = []
             f.visititems(lambda ad, o: yollar.append(ad) if ad.endswith("frequencyA/HVHV") else None)

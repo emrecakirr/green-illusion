@@ -2,7 +2,8 @@
 import os, sys, zipfile
 KLASOR = os.path.dirname(os.path.abspath(__file__))
 HEDEF = os.path.join(KLASOR, "data", "nasadem")
-BBOX = (30.9, 36.6, 32.2, 37.3)
+from bolge import BATI, GUNEY, DOGU, KUZEY
+BBOX = (BATI, GUNEY, DOGU, KUZEY)
 
 def main():
     import earthaccess
@@ -16,7 +17,7 @@ def main():
         if y.endswith(".zip"):
             with zipfile.ZipFile(y) as z:
                 for n in z.namelist():
-                    if n.endswith(".hgt"):
+                    if n.endswith(".hgt") and not os.path.exists(os.path.join(HEDEF, n)):
                         z.extract(n, HEDEF); print("  acildi:", n)
     print("Bitti. Simdi: 3_KOSUL_MODELI.bat")
 

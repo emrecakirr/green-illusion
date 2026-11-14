@@ -19,8 +19,7 @@ import glob, json, math, os, re, sys, importlib.util
 import numpy as np
 
 KLASOR = os.path.dirname(os.path.abspath(__file__))
-DATA = os.path.join(KLASOR, "data"); CIKTI = os.path.join(KLASOR, "cikti")
-BATI, GUNEY, DOGU, KUZEY = 30.9, 36.6, 32.2, 37.3
+from bolge import BATI, GUNEY, DOGU, KUZEY, DATA, CIKTI
 OBS = 2026.6
 LN10 = math.log(10)
 
@@ -107,7 +106,7 @@ def main():
 
     # Olay: buyuk yanginlar (yasa gore gruplar)
     olay = np.floor(yil).astype(int)
-    buyuk = [y for y in np.unique(olay) if (olay == y).sum() >= 200]
+    buyuk = [y for y in np.unique(olay) if (olay == y).sum() >= 60]
     sec = np.isin(olay, buyuk) & np.isfinite(z) & np.isfinite(s)
     print(f"Modelde kullanilan piksel: {sec.sum()} (olaylar: {[int(b) for b in buyuk]})")
 

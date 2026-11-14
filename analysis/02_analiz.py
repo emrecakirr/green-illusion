@@ -18,9 +18,7 @@ import glob, json, math, os, re, sys
 import numpy as np
 
 KLASOR = os.path.dirname(os.path.abspath(__file__))
-DATA = os.path.join(KLASOR, "data")
-CIKTI = os.path.join(KLASOR, "cikti")
-BATI, GUNEY, DOGU, KUZEY = 30.9, 36.6, 32.2, 37.3
+from bolge import BATI, GUNEY, DOGU, KUZEY, TILE, DATA, CIKTI, NISAR_DIR, AD_KOD
 GOZLEM_YILI = 2026.6          # NISAR / NDVI gozlem zamani (yaklasik Agustos 2026)
 
 # ---------------- MODIS sinuzoidal grid ----------------
@@ -73,7 +71,7 @@ def tarih_yil(dosya):
 
 # ---------------- 1) Yanma yili ----------------
 def yanma_yili_haritasi():
-    dosyalar = sorted(glob.glob(os.path.join(DATA, "mcd64a1", "*.hdf")))
+    dosyalar = sorted(glob.glob(os.path.join(DATA, "mcd64a1", f"*{TILE}*.hdf")))
     if not dosyalar:
         sys.exit("MCD64A1 dosyasi yok. Once: python 01_veri_indir.py --sadece yanik")
     h, v = tile_hv(dosyalar[0])
@@ -104,7 +102,7 @@ def yanma_yili_haritasi():
 
 # ---------------- 2) NDVI ----------------
 def ndvi_ornekle(x, y):
-    dosyalar = sorted(glob.glob(os.path.join(DATA, "mod13q1", "*.hdf")))
+    dosyalar = sorted(glob.glob(os.path.join(DATA, "mod13q1", f"*{TILE}*.hdf")))
     if not dosyalar:
         print("UYARI: MOD13Q1 yok, NDVI atlanacak.")
         return None
@@ -133,7 +131,7 @@ def _h5_bul(f, isim_kalibi):
 def gcov_ornekle(lat, lon):
     import h5py
     from pyproj import Transformer
-    dosyalar = sorted(glob.glob(os.path.join(DATA, "nisar_gcov", "*.h5")))
+    dosyalar = sorted(glob.glob(os.path.join(NISAR_DIR, "*.h5")))
     if not dosyalar:
         print("UYARI: NISAR GCOV yok, radar atlanacak.")
         return None, None
@@ -308,7 +306,7 @@ def ciz(sonuc):
                     label=f"{etiket}: %90 ~ {k['egri']['t90']:.0f} yil")
     ax.axhline(1, color="k", lw=0.6, ls="--"); ax.axhline(0.9, color="k", lw=0.4, ls=":")
     ax.set_xlabel("Yangindan bu yana gecen yil"); ax.set_ylabel("Toparlanma (0 = taze yanik, 1 = saglam orman)")
-    ax.set_title("Antalya: Yangin sonrasi toparlanma - optik vs radar")
+    ax.set_title(f"{AD_KOD}: Yangin sonrasi toparlanma - optik vs radar")
     ax.set_ylim(-0.2, 1.3); ax.legend(); fig.tight_layout()
     fig.savefig(os.path.join(CIKTI, "toparlanma_egrisi.png"))
 

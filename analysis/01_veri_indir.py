@@ -16,10 +16,10 @@ Earthdata kullanici adi/sifre ilk calistirmada sorulur ve _netrc dosyasina kayde
 import argparse, csv, getpass, os, sys
 
 # Calisma alani: Antalya ormanlari (Manavgat, Serik, Alanya)
-BATI, GUNEY, DOGU, KUZEY = 30.9, 36.6, 32.2, 37.3
+from bolge import BATI, GUNEY, DOGU, KUZEY, TILE, NISAR_DIR, AD_KOD
 BBOX = (BATI, GUNEY, DOGU, KUZEY)
 WKT = f"POLYGON(({BATI} {GUNEY},{DOGU} {GUNEY},{DOGU} {KUZEY},{BATI} {KUZEY},{BATI} {GUNEY}))"
-MODIS_TILE = "h20v05"  # Antalya bu MODIS karesinde
+MODIS_TILE = TILE
 
 KLASOR = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(KLASOR, "data")
@@ -106,15 +106,15 @@ def _pol(r):
 
 def nisar(sadece_liste=False, adet=1):
     import asf_search as asf
-    print("\nNISAR araniyor (Antalya)...")
+    print(f"\nNISAR araniyor ({AD_KOD})...")
     sonuc = asf.search(dataset="NISAR", processingLevel="GCOV", intersectsWith=WKT,
                        start="2026-06-01", maxResults=500)
     gcov = list(sonuc)
     gcov.sort(key=lambda r: r.properties.get("startTime", ""), reverse=True)
-    print(f"Antalya'da {len(gcov)} NISAR GCOV urunu bulundu.")
+    print(f"{AD_KOD}: {len(gcov)} NISAR GCOV urunu bulundu.")
 
-    os.makedirs(os.path.join(DATA, "nisar_gcov"), exist_ok=True)
-    liste = os.path.join(DATA, "nisar_gcov", "liste.csv")
+    os.makedirs(NISAR_DIR, exist_ok=True)
+    liste = os.path.join(NISAR_DIR, "liste.csv")
     with open(liste, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["fileID", "startTime", "flightDirection", "pathNumber", "frameNumber", "MB", "kapsama", "url"])
@@ -132,6 +132,8 @@ def nisar(sadece_liste=False, adet=1):
         return
     if sadece_liste:
         return
+    if any(f.endswith(".h5") for f in os.listdir(NISAR_DIR)):
+        print("NISAR dosyasi zaten var, atlaniyor."); return
 
     # En kucuk + en yeni (yaz sonu tercih) dosyayi sec
     # Secim: HV kanali olan + Antalya'yi en cok kapsayan + kuru mevsim (Temmuz-Agustos) + en yeni
@@ -144,7 +146,7 @@ def nisar(sadece_liste=False, adet=1):
     urller = asf.ASFSearchResults(secim).find_urls(extension=".h5", pattern=r"^(?!.*QA_STATS).*",
                                                    directAccess=False)
     print("  " + "\n  ".join(urller))
-    hedef = os.path.join(DATA, "nisar_gcov")
+    hedef = NISAR_DIR
     # Yol 1: earthaccess (NASA Earthdata token ile)
     try:
         import earthaccess
