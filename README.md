@@ -52,6 +52,13 @@ In **California's northern Sierra Nevada** (13 fires since 2001), optical data s
 | **All Mediterranean pine regions** | 10,367 | 14 | **31 yrs** (29–36) | **67 yrs** (49–109) |
 | **Sierra Nevada conifer** | 11,387 | 13 | **13 yrs** (10–25) | no clear trend (trees not returning) |
 
+
+## Checking against field studies
+Our satellite metric is not identical to what ecologists measure on the ground, so this is a check of direction, not an exact match. Independent field work points the same way as NISAR radar:
+- **Spain, 25 years after the 1994 fires:** only 33 of 131 burned plots had reached a state similar to unburned neighbors in height, cover and biomass (Rodrigues et al. 2024, *Forest Ecology and Management*, doi:10.1016/j.foreco.2023.121587). At 25 years our optical curve says 84% recovered and our radar curve says 58%. The same study found better recovery on north-facing slopes and in wetter, cooler conditions, the same direction as our elevation effect.
+- **Antalya, 2008 Serik–Taşağıl fire (in our data):** a five-year field study found no Turkish red pine regeneration in stands that were young when they burned, and concluded they would stay dominated by other woody plants without planting (Kavgacı et al. 2016, doi:10.3906/tar-1601-21).
+- **California:** field studies document high-severity fires turning Sierra Nevada conifer forest into shrub fields (Richter et al. 2019, doi:10.1002/ecs2.2882), which is what NISAR shows there.
+
 ## Data (all free, all NASA unless noted)
 - **NISAR L2 GCOV** (NASA-ISRO, L-band, PROVISIONAL, July–August 2026, one scene per region): [ASF DAAC](https://search.asf.alaska.edu/#/?dataset=NISAR)
 - **MODIS MCD64A1 v061** burned area, 2001–2025: [LP DAAC](https://www.earthdata.nasa.gov/data/catalog/lpcloud-mcd64a1-061)
